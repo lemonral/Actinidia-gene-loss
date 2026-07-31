@@ -1,0 +1,2 @@
+sample	current_or_alternative	accession	genome	gff	protein	source_url
+clem_scandens_reference	reference	manuscript_generated_public_accession_pending	../../data_store/legacy_linked/clem_scandens_reference_legacy/genome.fasta	../../data_store/legacy_linked/clem_scandens_reference_legacy/annotation.gff3	../../data_store/legacy_linked/clem_scandens_reference_legacy/protein.faa	public_nuclear_deposit_pending

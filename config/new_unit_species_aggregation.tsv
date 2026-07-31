@@ -1,0 +1,10 @@
+assembly_unit_id	biological_species	aggregation_rule	include
+act_rufa_actinidiabase_v1	Actinidia rufa	all_units_positive	true
+act_eriantha_hap1_2026	Actinidia eriantha	all_units_positive	true
+act_eriantha_hap2_2026	Actinidia eriantha	all_units_positive	true
+act_deliciosa_adm_2026_A	Actinidia deliciosa	all_units_positive	true
+act_deliciosa_adm_2026_B	Actinidia deliciosa	all_units_positive	true
+act_deliciosa_adm_2026_C	Actinidia deliciosa	all_units_positive	true
+act_deliciosa_adm_2026_D	Actinidia deliciosa	all_units_positive	true
+act_deliciosa_adm_2026_E	Actinidia deliciosa	all_units_positive	true
+act_deliciosa_adm_2026_F	Actinidia deliciosa	all_units_positive	true

@@ -1,0 +1,11 @@
+{
+  "taxon_a_id": 29760,
+  "taxon_b_id": 13443,
+  "scientific_name_a": "Vitis vinifera",
+  "scientific_name_b": "Coffea arabica",
+  "all_total": 47,
+  "precomputed_age": 118.048115,
+  "precomputed_ci_low": 111.37,
+  "precomputed_ci_high": 123.92863,
+  "adjusted_age": 125.1196
+}

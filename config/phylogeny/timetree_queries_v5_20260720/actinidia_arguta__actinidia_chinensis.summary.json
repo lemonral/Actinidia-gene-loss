@@ -1,0 +1,11 @@
+{
+  "taxon_a_id": 64478,
+  "taxon_b_id": 3625,
+  "scientific_name_a": "Actinidia arguta",
+  "scientific_name_b": "Actinidia chinensis",
+  "all_total": 3,
+  "precomputed_age": 20.77347,
+  "precomputed_ci_low": 5.5,
+  "precomputed_ci_high": 35.0424019333333,
+  "adjusted_age": 0
+}

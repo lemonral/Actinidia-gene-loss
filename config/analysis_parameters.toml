@@ -1,0 +1,209 @@
+schema_version = "1.0"
+maximum_project_workers = 15
+reader_facing_unit = "assembly_unit_id"
+biological_grouping_unit = "biological_species"
+
+[downloads]
+connections = 4
+curl_retries = 50
+proxy_domains = ["ftp.ncbi.nlm.nih.gov", "ndownloader.figshare.com", "genome.kazusa.or.jp"]
+segmented_proxy_domains = ["ftp.ncbi.nlm.nih.gov"]
+
+[assembly_qc.busco]
+version = "5.8.2"
+lineage = "embryophyta_odb10"
+lineage_creation_date = "2024-01-08"
+genome_mode = "euk_genome_min"
+protein_mode = "proteins"
+policy = "report every candidate genome and matched gene set; BUSCO alone never determines inclusion"
+
+[assembly_qc.jcvi]
+aligner = "LAST"
+database_type = "protein"
+cscore = 0.7
+tandem_nmax = 10
+maximum_gene_distance = 20
+minimum_anchor_block_size = 4
+screen_minimum_span = 30
+coverage_anchor_source = "raw JCVI anchors"
+primary_gate_metric = "reference_nonzero_depth_gene_indices / reference_bed_rows"
+primary_gate_minimum_fraction = 0.50
+require_reference_and_query_coverage_report = true
+require_exact_bed_fasta_identity = true
+
+[annotation_standardization]
+workflow_version = "1.0.0"
+input_scope = "reviewed chromosome-scope genome and matching GFF3"
+primary_isoform_selection = "first matching configured canonical-tag rule among valid transcripts; otherwise longest validated spliced CDS; then genomic span; then transcript ID"
+missing_CDS_phase_policy = "fail"
+invalid_coding_gene_policy = "fail"
+internal_stop_policy = "reject transcript"
+ambiguous_codon_policy = "retain as X and flag"
+require_gffread_for_publication = true
+gffread_version = "0.12.9"
+gffread_release_archive_sha256 = "3effcbb3ccf5a76305887df0d39feb69160aed6091e42f173bb0ebf422f18d17"
+maximum_workers = 1
+
+[gene_loss]
+positive_classes = ["deleted", "pseudogenized"]
+historical_reproduction_positive_classes = ["pseudogenized", "deleted"]
+uncertain_is_positive = false
+uncertain_enters_resolved_denominator = false
+shared_definition = "positive_complete in every included biological species"
+comparative_analysis_set = "non_shared"
+legacy_genome_wide_hit_rule_is_primary = false
+
+[gene_loss.tblastx]
+maximum_workers = 14
+version = "2.16.0+"
+command_evalue = 1e-5
+max_hsps_per_subject_chromosome = 20
+postfilter_percent_identity_minimum = 50.0
+postfilter_bitscore_minimum = 50.0
+postfilter_evalue_operator = "<"
+postfilter_evalue = 1e-5
+postfilter_alignment_length_minimum = 0
+historical_final_rule = "best genome-wide hit passing identity >=50%, bitscore >=50 and evalue <1e-5 is decayed; otherwise deleted"
+primary_rule = "superseded as production classifier by the uniform Miniprot/SynOrths evidence chain; retained for translated-search audit only"
+local_hit_rule = "uncertain genomic sequence detected; never pseudogenized without disruptive-mutation evidence"
+
+[gene_loss.miniprot]
+maximum_workers = 14
+version = "0.18-r281"
+loose_query_coverage_minimum = 0.50
+loose_exact_identity_minimum = 0.50
+loose_alignment_score_minimum = 50
+strict_disruption_query_coverage_minimum = 0.80
+strict_disruption_exact_identity_minimum = 0.70
+strict_disruption_alignment_score_minimum = 100
+strict_disruption_tags = ["fs", "st"]
+pseudogenized_interpretation = "assembly-sequence-supported disruption; not a population-fixed allele claim"
+
+[spatial]
+primary_positive_classes = ["pseudogenized"]
+resolved_denominator_classes = ["retained", "pseudogenized"]
+deleted_position_role = "expected_locus_sensitivity_only"
+equal_width_bins = 5
+primary_bin_mode = "mutually_exclusive_equal_width"
+normalize_by = "GFF gene opportunity"
+report_normalized_chromosome_end_distance = true
+centromere_policy = "use only independently supplied intervals"
+telomere_policy = "do not label chromosome ends as telomeres without independent intervals"
+legacy_nested_intervals = "sensitivity_only"
+
+[nlr]
+maximum_workers = 8
+target_scope = "complete declared 29-chromosome analysis-unit scope"
+percentage_definition = "non-shared deleted plus strict-pseudogenized reference-NLR calls / resolved retained-deleted-pseudogenized unit comparisons"
+shared_positive_complete_genes_excluded = true
+uncertain_callable_comparisons_remain_in_denominator = false
+separate_primary_and_rufa_sensitivity = true
+
+[phylogeny]
+gene_loss_units_may_be_phylogeny_terminals = true
+outgroups_may_enter_gene_loss_denominator = false
+primary_tree_level = "selected_species_or_parental_lineage"
+diagnostic_tree_level = "assembly_unit"
+maximum_workers = 15
+primary_representation = "one declared QC-passing representative haploid complement per nonhybrid species, with A. x zhejiangensis A and B retained as separate parental lineages"
+representative_selection_basis = "identity, complete scope, BUSCO, annotation integrity, contamination checks, and orthologue occupancy; never topology"
+orthogroup_engine = "OrthoFinder 3; freeze exact version, command, input checksums, and MSA/tree settings per production run"
+concatenation_engine = "IQ-TREE 2 on a partitioned strict one-copy-per-selected-species locus set"
+coalescent_engine = "ASTRAL-Pro on validated multi-copy gene-family trees with an explicit copy-to-biological-species map"
+dating_engine = "MCMCTree 4.10.10 V6 under four checksum-bound author-approved TimeTree 5 secondary soft intervals; never fossil-calibrated"
+gene_family_engine = "CAFE 5 on the matching dated biological-species tree and representative-complement counts"
+assembly_unit_dating_allowed = false
+assembly_unit_cafe_allowed = false
+polyploid_raw_unit_sum_allowed = false
+active_fossil_requires_exact_bracketing_taxa = true
+manuscript_reproduction = "OrthoFinder 2.5.5, DendroBLAST, RAxML-NG, ape chronos/TimeTree, and CAFE 4.2 remain labelled reproduction-only"
+
+[chromosome_homology]
+production_role = "strict multi-evidence confidence diagnostic; not the chromosome-naming authority"
+coordinate_reference = "act_chinensis_hongyang_v4_hy4a"
+independent_confirmation_reference = "act_chinensis_hongyang_v4_hy4p"
+matrix_schema_version = "1.0.0"
+matrix_provenance_schema_version = "1.0.0"
+reference_asset_registry_sha256 = "af2e7855d270a20aae5d4c872b51ef1ad4bd9b549199ba1c8c8501584b6155d1"
+reference_chromosome_map_registry_sha256 = "79757d8311a104e650e2d85c3444266a453e6e7d923333201631d6efd00de621"
+expected_query_chromosomes = 29
+expected_reference_chromosomes = 29
+minimap2_version = "2.28-r1209"
+minimap2_command_template = ["minimap2", "-x", "asm5", "--secondary=no", "-c", "--cs=long", "{reference_fasta}", "{query_fasta}"]
+minimap2_primary_only = true
+minimum_mapq = 20
+minimum_alignment_block_bp = 10000
+maximum_de = 0.15
+coverage_arithmetic = "interval union in both query and reference directions; never raw PAF-row sums"
+assignment_method = "global one-to-one Hungarian assignment"
+nucleotide_score_formula = "harmonic_mean(query_coverage,reference_coverage)*(1-weighted_divergence)"
+reciprocal_nucleotide_coverage_formula = "min(query_coverage,reference_coverage)"
+jcvi_score_formula = "harmonic_mean(query_gene_coverage,reference_gene_coverage)"
+jcvi_anchor_counting = "unique anchored genes and unique anchor pairs after exact chromosome-ID reconciliation"
+arithmetic_tolerance = 1e-9
+minimum_top_second_ratio = 1.5
+minimum_normalized_score_margin = 0.10
+minimum_assigned_reciprocal_nucleotide_coverage = 0.05
+minimum_unique_anchor_pairs = 30
+minimum_reciprocal_gene_coverage = 0.05
+minimum_assigned_jcvi_score = 0.05
+require_row_and_column_reciprocal_best = true
+require_nucleotide_and_jcvi_assignment_agreement = true
+require_hy4a_hy4p_label_agreement = true
+reverse_complement_allowed = false
+failure_policy = "retain provisional PubChr labels and stop; never force a final Chr label"
+
+[chromosome_naming]
+coordinate_reference = "act_chinensis_hongyang_v4_hy4a"
+method = "global one-to-one maximum nucleotide similarity"
+require_complete_29_by_29_matrix = true
+require_unique_final_labels = true
+absolute_coverage_is_blocking = false
+low_support_policy = "assign the best-supported unique Chr label and retain a low-confidence QC flag"
+independent_hy4p_and_jcvi_evidence = "reported as confidence diagnostics, not naming blockers"
+
+[chromosome_orientation_harmonization]
+production_status = "superseded diagnostic implementation; do not invoke for revised naming"
+production_direction_policy = "preserve publisher direction; relabel only"
+primary_orientation_reference = "act_chinensis_hongyang_v4_hy4a"
+label_confirmation_reference = "act_chinensis_hongyang_v4_hy4p"
+minimum_dominant_orientation_fraction = 0.80
+minimum_oriented_matching_bases = 1000000
+positive_action = "keep"
+negative_action = "reverse_complement"
+mixed_or_insufficient_action = "manual_review_without_forced_flip"
+transform_gff_coordinates_and_strands = true
+require_cds_and_protein_sequence_identity_after_transform = true
+retain_original_publisher_scope_assets = true
+
+[phylogeny.loci]
+protein_alignment = "MAFFT high-accuracy mode; exact version and command frozen per run"
+backtranslation = "validated CDS lookup with exact protein-to-CDS closure"
+trim_policy = "deterministic codon-aware occupancy rule frozen before locus selection"
+concatenation_loci = "strict one-copy orthogroups across every selected biological-species representative"
+coalescent_loci = "validated single-copy and multi-copy gene-family trees"
+minimum_taxon_occupancy = "must be declared before production; no threshold is inferred from successful loci"
+gene_tree_support_filter = "declared before production and applied identically to every locus"
+
+[phylogeny.pgls]
+enabled = true
+status = "enabled"
+execution_gate = "dated primary lineage tree PASS and shared/non-shared lineage loss table PASS"
+allowed_tree = "primary ultrametric lineage tree with A. x zhejiangensis A and B retained separately"
+assembly_units_allowed = true
+shared_losses_allowed = false
+ordinary_gaussian_pgls_publication_allowed = true
+denominator_aware_model_status = "additional_analysis"
+response_numerator = "lineage-specific/non-shared positive loss count per selected species or parental lineage"
+response_denominator = "definitive callable lineage calls after excluding shared positives, uncertain calls, and non-callable genes"
+primary_predictor = "log2_ploidy"
+required_sensitivities = ["exclude Actinidia rufa", "swap the accepted Actinidia rufa assembly and rebuild its matched tree/loss row", "leave one biological species out and prune the topology for every fit"]
+
+[release]
+push_automatically = false
+commit_raw_genomes = false
+commit_manuscripts_or_reviewer_files = false
+commit_absolute_paths_or_commands = false
+require_single_threaded_tests = true
+require_privacy_scan = true
+require_figure_and_workbook_validation = true

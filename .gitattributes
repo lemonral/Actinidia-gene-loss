@@ -1,0 +1,2 @@
+# A trailing tab in a TSV is a real empty terminal field, not whitespace damage.
+*.tsv whitespace=-blank-at-eol

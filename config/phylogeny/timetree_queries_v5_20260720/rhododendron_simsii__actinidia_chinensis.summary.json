@@ -1,0 +1,11 @@
+{
+  "taxon_a_id": 118357,
+  "taxon_b_id": 3625,
+  "scientific_name_a": "Rhododendron simsii",
+  "scientific_name_b": "Actinidia chinensis",
+  "all_total": 14,
+  "precomputed_age": 91.457,
+  "precomputed_ci_low": 53.38639,
+  "precomputed_ci_high": 99.2414053555556,
+  "adjusted_age": 0
+}

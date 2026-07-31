@@ -1,0 +1,3 @@
+source_id	matrix_dir	expected_unit_count
+legacy_exact_bound_primary	qc/legacy_primary_complete_loss_matrix_20260719	14
+new_or_changed_primary	qc/new_unit_complete_loss_matrix_20260719	9

@@ -1,0 +1,11 @@
+{
+  "taxon_a_id": 13443,
+  "taxon_b_id": 118357,
+  "scientific_name_a": "Coffea arabica",
+  "scientific_name_b": "Rhododendron simsii",
+  "all_total": 29,
+  "precomputed_age": 108.21596,
+  "precomputed_ci_low": 101.55,
+  "precomputed_ci_high": 115.6229,
+  "adjusted_age": 113.97482
+}

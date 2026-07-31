@@ -1,0 +1,13 @@
+# Reference BED identifiers without a translated record in the matched protein FASTA.
+# This exact allow-list is required by the JCVI denominator validator.
+CS01G1757.mRNA1
+CS01G2054.mRNA1
+CS02G2261.mRNA1
+CS04G1792.mRNA2
+CS05G1667.mRNA1
+CS07G1003.mRNA1
+CS11G0847.mRNA1
+CS14G0001.mRNA1
+CS19G1017.mRNA1
+CS21G1086.mRNA1
+CS22G0579.mRNA1

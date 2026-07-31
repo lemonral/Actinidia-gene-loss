@@ -1,0 +1,13 @@
+bundle_id	partition_scheme	partition_token	partition_label	assembly_unit_id	biological_species	individual_id	ploidy	expected_chromosome_count	allow_unplaced_annotations
+act_deliciosa_qinmei_2025	qinmei_suffix	1	A	act_deliciosa_qinmei_2025_A	Actinidia deliciosa	Qinmei_2025	6x	29	true
+act_deliciosa_qinmei_2025	qinmei_suffix	2	B	act_deliciosa_qinmei_2025_B	Actinidia deliciosa	Qinmei_2025	6x	29	true
+act_deliciosa_qinmei_2025	qinmei_suffix	3	C	act_deliciosa_qinmei_2025_C	Actinidia deliciosa	Qinmei_2025	6x	29	true
+act_deliciosa_qinmei_2025	qinmei_suffix	4	D	act_deliciosa_qinmei_2025_D	Actinidia deliciosa	Qinmei_2025	6x	29	true
+act_deliciosa_qinmei_2025	qinmei_suffix	5	E	act_deliciosa_qinmei_2025_E	Actinidia deliciosa	Qinmei_2025	6x	29	true
+act_deliciosa_qinmei_2025	qinmei_suffix	6	F	act_deliciosa_qinmei_2025_F	Actinidia deliciosa	Qinmei_2025	6x	29	true
+act_deliciosa_adm_2026	adm_header	1	A	act_deliciosa_adm_2026_A	Actinidia deliciosa	ADM_2026	6x	29	false
+act_deliciosa_adm_2026	adm_header	2	B	act_deliciosa_adm_2026_B	Actinidia deliciosa	ADM_2026	6x	29	false
+act_deliciosa_adm_2026	adm_header	3	C	act_deliciosa_adm_2026_C	Actinidia deliciosa	ADM_2026	6x	29	false
+act_deliciosa_adm_2026	adm_header	4	D	act_deliciosa_adm_2026_D	Actinidia deliciosa	ADM_2026	6x	29	false
+act_deliciosa_adm_2026	adm_header	5	E	act_deliciosa_adm_2026_E	Actinidia deliciosa	ADM_2026	6x	29	false
+act_deliciosa_adm_2026	adm_header	6	F	act_deliciosa_adm_2026_F	Actinidia deliciosa	ADM_2026	6x	29	false

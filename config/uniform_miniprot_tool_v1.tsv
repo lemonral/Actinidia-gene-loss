@@ -1,0 +1,2 @@
+tool	version	source_url	source_tag	source_commit	compiler	binary_sha256	role
+Miniprot	0.18-r281	https://github.com/lh3/miniprot	v0.18	671db243f964a68bd724af11cd9964d840f29c43	gcc 11.4.0	9f9d64a98ac70d3e5701df984c57ba2b687725bf3fa53bffb61d966aa4d1810b	uniform old/new local protein-to-genome alignment and explicit frameshift/in-frame-stop evidence
