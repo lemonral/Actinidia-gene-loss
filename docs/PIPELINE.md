@@ -451,45 +451,46 @@ and the same species aggregation ledger.
 
 ### Expression
 
-Map expression identifiers to the exact annotation version, record tissues and
-normalization, and model the relationship between expression level and
-non-shared positive-loss rate. The production input is the declared
-*C. scandens* leaf featureCounts raw-count column. Remove the shared-positive
-set, divide the remaining reference genes into 14 rank-first expression bins,
-and calculate a separate unit-level rate in every bin. The numerator is
-`deleted + pseudogenized`; the denominator is that numerator plus `retained`.
-Uncertain calls are excluded rather than counted as retained. Retain the plot
-data and fit statistics.
+Map expression identifiers to the exact annotation version and retain the
+arithmetic mean TPM across the four declared *C. scandens* tissues. Divide the
+reference genes into 14 rank-first expression bins and calculate a separate
+rate for every genome unit and bin. Shared and non-shared calls are included
+together. The numerator is article-method `decayed`, and the resolved
+denominator is `retained + decayed + deleted`; `not_called_loss` is excluded.
+Fit the reported overall regression to the complete unit-by-bin plot table and
+retain the plotted data and fit statistics.
 
 ### Copy number
 
-Calculate copy number from the frozen orthogroup/orthologue table, not from an
-unversioned historical file. Report the denominator at every copy-number level
-and the fitted relationship with non-shared positive-loss rate. In the frozen
-production Figure 3 analysis, copy number is the immutable size of the
-reference-protein CD-HIT 0.90 similarity cluster, calculated before excluding
-shared genes. It is therefore a reference gene-family redundancy measure, not
-a target-species CNV call. Keep classes 1--7, each supported by more than 100
-reference genes, and apply the same resolved non-shared loss numerator and
-denominator used for expression.
+In the production analysis, copy number is the size of the *C. scandens*
+reference-protein CD-HIT 0.90 similarity cluster. It is therefore a reference
+gene-family-size measure, not a target-species CNV call. Keep classes 1--7,
+each supported by more than 100 reference genes. For every genome unit and
+class, use the same shared-plus-non-shared article-method `decayed` numerator
+and resolved denominator used for expression, and retain the fitted overall
+relationship.
 
 ### Chromosome position
 
-Use an observed target midpoint for exact-SynOrths retained genes and the
-observed disrupted-alignment midpoint for strict pseudogenized calls. These
-two states form the primary target-locus position comparison. A positive
-deletion has no observed target feature; its bilateral SynOrths-bounded
-callable expected-locus midpoint is used only in a separately labelled
-sensitivity. Produce per-assembly-unit and species-aware outputs for every
-available haplotype or subgenome, including *A. deliciosa* A-F and
-*A. zhejiangensis* units.
+Restrict the primary position analysis to article-method `decayed` loci with
+an observed residual-sequence coordinate in the corresponding target genome.
+Include shared and non-shared loci together. Exclude deleted calls because
+they have no observed target locus, and exclude spatially unlocalized decayed
+calls. Harmonize the 29 homologous *Actinidia* chromosome groups to HY4A
+`Chr01`--`Chr29` while retaining each genome unit as an independent model row.
 
-The primary analysis uses mutually exclusive equal-width chromosome bins and
-a gene-opportunity null model. The old nested-midpoint intervals are generated
-only as a labelled reproduction sensitivity analysis. Distances to chromosome
-ends can be calculated directly. Distances to centromeres or telomeres are
-reported only when an independently supported interval/table exists; a failed
-centromere-prediction directory is not treated as evidence.
+Test between-chromosome heterogeneity with a negative-binomial model containing
+genome-unit and chromosome effects and the log annotated-gene count as an
+offset. Test within-chromosome position after assigning each target gene and
+decayed locus to one of five equal zones from the nearest chromosome end to
+the centre. The zone model contains genome-unit, chromosome, and zone effects,
+again with the matching annotated-gene count as an offset. Treat frameshift,
+in-frame-stop, and combined-disruption subsets as mechanistic sensitivities.
+Use chromosome-length expectations only for the separate descriptive
+placement summaries. Do not infer centromere or transposable-element effects
+without independent annotations. See
+`docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md` for the pooling and
+standardization rules.
 
 ### NLR repertoire
 
@@ -509,50 +510,38 @@ reference gene.
 
 ### GO and KEGG enrichment
 
-Use the checksum-bound reference-protein eggNOG-mapper annotation as the
-functional mapping source. Test GO terms, KEGG orthologues, and KEGG pathways
-with one-sided hypergeometric tests and apply Benjamini-Hochberg correction
-within each foreground and ontology.
+Use the checksum-bound eggNOG-mapper annotation generated with the
+Viridiplantae taxonomic scope. Analyze GO biological process, molecular
+function, and cellular component, KEGG orthology, and KEGG pathway membership
+as separate annotation systems.
 
-The primary functional analysis follows the article-comparable classification
-without lineage aggregation. Analyze all 23 assembly units independently. For
-each unit, define the foreground as every `decayed + deleted` reference gene
-in that unit and define the unit-specific opportunity background as
-`retained + decayed + deleted` in the same unit. Exclude `not_called_loss`.
-Do not require that a foreground gene be retained in any other unit, and do
-not merge haplotypes, subgenomes, or units into species means. This produces
-179,827 unit-gene foreground memberships and 6,420 significant term rows.
+The primary foregrounds are terminal complete-loss events on the accepted
+13-lineage topology. Unit-level positive states are article-method `decayed`
+or `deleted`. For a multi-unit species, complete loss requires every assigned
+haplotype or subgenome to be positive; mixed states remain partial or
+homeolog-specific. Remove genes assigned to an ancestral event on the focal
+root-to-tip path from that lineage's risk set.
 
-For the publication-oriented detail figure, retain terms with BH
-`q <= 0.05`, at least two foreground genes, and fold enrichment greater than
-one. Within GO biological process, GO molecular function, GO cellular
-component, and KEGG pathway, rank terms by significant-unit recurrence,
-median `-log10(q)`, median fold enrichment, total contributing lost genes, and
-stable term identifier. Plot the actual contributing lost-gene count by point
-area and BH significance by color. Keep the category-count heatmap as QC.
-KEGG labels are orthology-derived categories and must not be interpreted as
-proof of an animal- or disease-specific phenotype in *Actinidia*.
+For each lineage and annotation system, fit a null logistic model containing
+z-standardized log2(four-tissue mean TPM + 0.1), its squared term,
+z-standardized log2(reference CD-HIT 0.90 family size), and its squared term.
+Test each functional term with a one-sided efficient score test, requiring at
+least five background genes and two terminally lost genes. Apply
+Benjamini-Hochberg correction within lineage and annotation system, then refit
+significant positive terms to estimate adjusted odds ratios and 95% confidence
+intervals. The validated analysis contains 33,998 resolved reference genes,
+33,974 genes with complete covariates, 19,192 terminal-event memberships,
+32,591 tested lineage-term rows, and 3,646 significant rows.
 
-For topology context, also test the maximal loss-event gene set assigned to
-each node or terminal of the 23-unit scaffold. Use as a common background the
-reference genes with resolved article-method states in all 23 units. Preserve
-all node rows, including true zero-significance results. This scaffold layer
-is an enrichment description of event placement, not a PGLS and not a newly
-inferred 23-species phylogeny.
-
-Retain tree-aware branch sets, pure single-terminal species-specific sets, and
-the unified `deleted + strict pseudogenized` analysis as explicitly labelled
-supplementary sensitivities. They must never replace the 23-unit
-article-method result silently.
-
-Collapse equivalent `koNNNNN` and `mapNNNNN` pathway identifiers to
-`mapNNNNN`, exclude ontology roots, and do not guess mappings for older GO
-identifiers absent from the checksum-bound GO release. Preserve
-requested-gene and annotated-gene coverage for every test. For category
-reporting, separate GO biological process, molecular function, and cellular
-component; keep KEGG KO and KEGG pathway as distinct categories. Category
-heatmap cells count significant terms; they are descriptive counts, not effect
-sizes, and must be interpreted with the annotation-coverage columns.
+Representative figure terms are selected deterministically from significant,
+converged full-model fits. Rank terms by the number of significant lineages,
+the smallest adjusted q value, the mean adjusted log2 odds ratio, and the term
+identifier. Reduce GO ancestor-descendant redundancy when significant-lineage
+sets overlap strongly. Retain the complete tested table outside this display
+subset. Unit-level hypergeometric and topology-scaffold summaries remain
+complementary descriptive analyses. See
+`docs/COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md` for the exact selection
+rules and category limits.
 
 ## Stage 9: figures and typography
 

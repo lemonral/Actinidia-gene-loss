@@ -137,7 +137,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def p_text(value: float) -> str:
-    return "p < 0.001" if value < 0.001 else f"p = {value:.3f}"
+    return r"$P < 0.001$" if value < 0.001 else rf"$P = {value:.3f}$"
 
 
 def plot_panels(expression: pd.DataFrame, copies: pd.DataFrame,
@@ -189,7 +189,7 @@ def plot_panels(expression: pd.DataFrame, copies: pd.DataFrame,
     ax_a.text(
         0.57,
         0.67,
-        rf"Global OLS: $R^2$={expression_stats['r_squared']:.3f}, "
+        rf"$R^2$={expression_stats['r_squared']:.3f}, "
         f"{p_text(float(expression_stats['p_value']))}",
         transform=ax_a.transAxes,
         fontsize=8.5,
@@ -209,7 +209,7 @@ def plot_panels(expression: pd.DataFrame, copies: pd.DataFrame,
     ax_b.set_ylim(bottom=0)
     ax_b.text(-0.09, 1.02, "(b)", transform=ax_b.transAxes, va="bottom", ha="left",
               fontsize=10.5, fontweight="bold")
-    ax_b.text(0.60, 0.60, rf"$R^2$={copy_stats['r_squared']:.3f}, {p_text(float(copy_stats['p_value']))}",
+    ax_b.text(0.56, 0.82, rf"$R^2$={copy_stats['r_squared']:.3f}, {p_text(float(copy_stats['p_value']))}",
               transform=ax_b.transAxes, fontsize=8.5)
     for axis in axes:
         axis.grid(axis="y", color="#D9D9D9", linewidth=0.55)

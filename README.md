@@ -83,8 +83,8 @@ scripts/figures/     publication figure renderers
 Python 3.10 or later is required.
 
 ```bash
-git clone git@github.com:lemonral/Actinidia_gene_loss.git
-cd Actinidia_gene_loss
+git clone git@github.com:lemonral/Actinidia-gene-loss.git
+cd Actinidia-gene-loss
 
 python3 -m venv .venv
 source .venv/bin/activate
@@ -118,7 +118,7 @@ cp config/project.env.example config/project.env
 Example layout:
 
 ```text
-Actinidia_gene_loss/
+Actinidia-gene-loss/
 actinidia_gene_loss_data/
 ├── downloads/
 ├── raw/
@@ -158,9 +158,14 @@ Start with:
 3. [`docs/MANUSCRIPT_METHOD_LOSS_CLASSIFICATION.md`](docs/MANUSCRIPT_METHOD_LOSS_CLASSIFICATION.md)
    for the primary loss-classification rules;
 4. [`docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md`](docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md)
-   for spatial analysis; and
-5. [`docs/TREE_AWARE_LOSS_FUNCTION.md`](docs/TREE_AWARE_LOSS_FUNCTION.md) for
-   branch-event and functional analyses.
+   for spatial analysis;
+5. [`docs/COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md`](docs/COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md)
+   for the terminal-loss GO and KEGG models;
+6. [`docs/TREE_AWARE_LOSS_FUNCTION.md`](docs/TREE_AWARE_LOSS_FUNCTION.md) for
+   branch-event and complementary functional analyses.
+
+A concise record of analysis and figure changes is maintained in
+[`docs/ANALYSIS_CHANGELOG.md`](docs/ANALYSIS_CHANGELOG.md).
 
 Every stage-specific script supports `--help`, for example:
 

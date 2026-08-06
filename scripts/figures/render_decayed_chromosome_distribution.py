@@ -283,11 +283,11 @@ def render_between(
     axis_a.set_axisbelow(True)
     axis_a.text(
         0.995,
-        0.97,
+        1.02,
         rf"NB LRT: $\chi^2_{{28}}$ = {f(model, 'likelihood_ratio_chi_square'):.1f}, "
-        rf"$P$ < 10$^{{-99}}$",
+        r"$P < 0.001$",
         ha="right",
-        va="top",
+        va="bottom",
         transform=axis_a.transAxes,
         fontsize=7.5,
     )
@@ -504,7 +504,7 @@ def render_within(
         0.96,
         rf"All decayed, NB LRT: $\chi^2_4$ = "
         rf"{f(zone_model, 'likelihood_ratio_chi_square'):.1f}, "
-        rf"$P$ = {f(zone_model, 'p_value'):.1e}",
+        r"$P < 0.001$",
         ha="right",
         va="top",
         transform=axis_a.transAxes,
@@ -539,7 +539,7 @@ def render_within(
     axis_b.text(
         0.995,
         1.01,
-        "* five-zone heterogeneity, BH q < 0.05",
+        r"* five-zone heterogeneity, BH $q < 0.05$",
         transform=axis_b.transAxes,
         ha="right",
         va="bottom",

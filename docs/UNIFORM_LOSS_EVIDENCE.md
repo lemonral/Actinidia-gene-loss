@@ -1,5 +1,9 @@
 # Uniform old/new loss evidence
 
+This document records the stricter unified-evidence sensitivity analysis. It
+does not define the current article-comparable `decayed + deleted` primary
+analysis. Current downstream rules are summarized in `docs/PIPELINE.md`.
+
 The production V2 analysis applies one evidence chain to all 23 assembly
 units.  It does not copy the manuscript-era `decayed` label into the primary
 matrix.
@@ -65,14 +69,15 @@ unequal precision induced by different resolved denominators.
 
 ## Expression and copy number
 
-Both Figure 3 panels use the unified non-shared matrix, not the historical
-`decayed=pseudogenized` result. Removing the 287 shared genes leaves 35,260
-reference genes. Across 23 units, 704,429 `retained`, `deleted`, or strict
-`pseudogenized` rows form resolved opportunities; 106,551 `uncertain` rows are
-excluded. In every rate, the numerator is `deleted + pseudogenized` and the
-denominator is `retained + deleted + pseudogenized`.
+The archived strict-sensitivity panels use the unified non-shared matrix, not
+the historical `decayed=pseudogenized` result. Removing the 287 shared genes
+leaves 35,260 reference genes. Across 23 units, 704,429 `retained`, `deleted`,
+or strict `pseudogenized` rows form resolved opportunities; 106,551
+`uncertain` rows are excluded. In every rate, the numerator is
+`deleted + pseudogenized` and the denominator is
+`retained + deleted + pseudogenized`.
 
-The expression panel uses the declared *C. scandens* leaf S23I0033
+That archived expression panel uses the declared *C. scandens* leaf S23I0033
 featureCounts raw-count column. The 35,260 non-shared reference genes are
 ranked after `log(raw count + 0.1)` and split deterministically into 14 nearly
 equal bins. A separate loss rate is calculated for every assembly unit and
@@ -89,10 +94,10 @@ all uncertain calls are excluded rather than converted to retained.
 
 ## Functional enrichment
 
-The article-comparable primary functional analysis is unit-resolved and is
-documented in `MANUSCRIPT_METHOD_LOSS_CLASSIFICATION.md`. It uses 23
-independent `decayed + deleted` foregrounds without species or subgenome
-aggregation.
+The current primary functional analysis uses species-complete terminal events
+and covariate-adjusted logistic score tests, as documented in
+`COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md`. The analysis below is retained
+only as a strict unified-evidence sensitivity.
 
 This stricter sensitivity uses the unified evidence
 semantics. Its non-shared foreground is `deleted + pseudogenized`

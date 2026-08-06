@@ -14,14 +14,16 @@ Canonical revised outputs currently include:
 - `tables/manuscript_method_downstream`: the matching 23-unit article-method
   shared/non-shared tables, 13-lineage complete/partial states, and exact
   terminal/internal/repeated-loss event assignments on the frozen topology;
+- `tables/species_complete_loss_covariate_adjusted_enrichment` and
+  `figures/species_complete_loss_covariate_adjusted_enrichment`: primary
+  terminal-loss GO/KEGG analysis for 13 biological lineages. Complete loss in
+  a multi-unit species requires all constituent units to be `decayed` or
+  `deleted`. Logistic score tests adjust for four-tissue mean TPM and reference
+  family size;
 - `tables/unit_functional_enrichment_article_method`,
   `figures/unit_functional_enrichment_detail`, and
-  `figures/unit_functional_enrichment_article_method`: primary GO/KEGG
-  enrichment for 23 independent `decayed + deleted` foregrounds. The detailed
-  figure names representative terms and encodes contributing lost-gene counts
-  and BH significance; the older category-count panel is retained as QC.
-  Haplotypes and subgenomes remain separate, with no retained-state
-  requirement in other units;
+  `figures/unit_functional_enrichment_article_method`: complementary
+  hypergeometric GO/KEGG summaries for 23 independent genome units;
 - `tables/species_specific_functional_enrichment` and
   `figures/species_specific_functional_enrichment`: GO/KEGG results for the
   1,167 pure single-terminal species-specific losses, retained as a narrow
@@ -42,9 +44,9 @@ Canonical revised outputs currently include:
   event display;
 - `figures/manuscript_method_unit_loss`: the article-method main loss-count
   composition for all 23 units;
-- `figures/expression_copy_loss_all_decayed`: pooled shared + non-shared
-  `decayed`-only relationships with reference leaf expression and reference
-  protein-family size for all 23 independent units;
+- `figures/expression_copy_loss_four_tissue_tpm`: pooled shared + non-shared
+  `decayed`-only relationships with four-tissue arithmetic mean TPM and
+  reference-protein family size for all 23 independent units;
 - `tables/nlr_loss_types` and `figures/nlr_loss_types`: complete NLR
   repertoires and 23-unit non-shared NLR loss partitioned into six mutually
   exclusive evidence groups, without species aggregation;
@@ -66,16 +68,22 @@ Canonical revised outputs currently include:
 - `figures/assembly_annotation_qc`: 23-unit assembly, annotation, and BUSCO QC;
 - `figures/chromosome_similarity_naming`: complete one-to-one Chr01--Chr29
   naming relative to HY4A, with nucleotide and JCVI support shown as QC only;
+- `figures/reference_jcvi_gene_depth` and `figures/reference_jcvi_support`:
+  gene-level JCVI depth and homologous-chromosome support between the
+  24-chromosome *C. scandens* reference and every accepted 29-chromosome
+  *Actinidia* genome unit;
 - `tables/uniform_loss` and `tables/species_loss_uniform`: the stricter 23-unit
   sensitivity taxonomy, frameshift/stop evidence, and 13-lineage aggregation;
 - `figures/species_shared_nonshared_loss_uniform`: the matching unified
   13-lineage shared/non-shared evidence figure (287 shared genes);
-- `statistics/pseudogenized_positions_uniform`: the primary observed-target-
-  locus/end-distance model for strict pseudogenized versus retained loci,
-  including all 20,046 pseudogene target coordinates; deleted expected-locus
-  midpoints are labelled sensitivity evidence only;
-- `figures/pseudogenized_positions_uniform`: the matching 23-unit primary
-  observed-target-locus position figure with deleted and uncertain absent;
+- `tables/decayed_chromosome_distribution`,
+  `figures/decayed_chromosome_distribution`, and
+  `figures/decayed_chromosome_within_distribution`: the primary 23-unit
+  between- and within-chromosome models for article-method decayed loci,
+  using target annotated-gene counts as opportunity offsets;
+- `statistics/pseudogenized_positions_uniform` and
+  `figures/pseudogenized_positions_uniform`: the strict-pseudogenized
+  observed-target-position sensitivity;
 - `figures/expression_copy_loss_uniform`: the stricter denominator-aware
   expression/copy sensitivity, not the article-comparable main figure;
 - `tables/nlr_uniform` and `figures/nlr_uniform`: complete NLR repertoires and
@@ -132,13 +140,20 @@ The 13-lineage shared-positive set contains 287 genes. The rebuilt NLR bundle
 excludes four shared reference NLR genes and reports 210 non-shared reference
 NLR genes, 2,487 resolved unit comparisons, and 1,003 positive calls.
 
-The primary functional analysis keeps all 23 assembly units independent. Each
-foreground contains every `decayed + deleted` gene in that unit and does not
-require retained evidence anywhere else. Its unit-specific background contains
-`retained + decayed + deleted` in the same unit, excluding `not_called_loss`.
-The 23 foregrounds contain 179,827 unit–gene memberships and retain 6,420
-GO/KEGG rows at BH-adjusted `q <= 0.05`; no unit has an all-zero functional
-result.
+The primary functional analysis groups the 23 genome units into 13 biological
+lineages. Complete loss in a multi-unit species requires every assigned
+haplotype or subgenome to be `decayed` or `deleted`; mixed states remain
+partial or homeolog-specific. After removing ancestral events from each focal
+terminal risk set, one-sided logistic score tests adjust functional associations
+for the linear and quadratic effects of four-tissue mean TPM and reference
+CD-HIT 0.90 family size. The validated analysis contains 33,998 resolved genes,
+33,974 genes with complete covariates, 19,192 terminal-event memberships,
+32,591 tested lineage-term rows, and 3,646 significant positive associations:
+3,143 GO, 390 KEGG orthology, and 113 KEGG pathway rows.
+
+The complementary unit-level hypergeometric analysis keeps all 23 genome units
+independent. Its foregrounds contain 179,827 `decayed + deleted` unit-gene
+memberships and retain 6,420 GO/KEGG rows at BH-adjusted `q <= 0.05`.
 
 The matching unit-resolved scaffold functional layer tests all 39 node and
 terminal event sets against the 33,998 genes resolved in all 23 units. It
@@ -181,8 +196,8 @@ This presentation rule does not change any sample, lineage, or denominator.
 The current expression/reference-family-size figure pools shared and
 non-shared genes. Its numerator is `decayed` only and its denominator is
 `retained + decayed + deleted` within the matching unit and expression bin or
-family-size class; `not_called_loss` is excluded. Expression is the declared
-*C. scandens* leaf raw featureCounts sample divided into 14 rank bins.
+family-size class; `not_called_loss` is excluded. Expression is the arithmetic
+mean TPM across four declared *C. scandens* tissues, divided into 14 rank bins.
 Reference family size is the original CD-HIT 0.90 reference-protein cluster
 size, with classes 1--7 retained because each contains more than 100 reference
 genes; it is not a target-species CNV estimate.

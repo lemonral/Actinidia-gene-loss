@@ -36,6 +36,7 @@ Rplots.pdf
 *.xls
 reviewer_response*
 submission_assets/
+results/manuscript_revision*/
 
 # Large biological data and tool outputs
 /data_store

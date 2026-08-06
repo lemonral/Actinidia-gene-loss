@@ -11,6 +11,16 @@ from the expected interval does not provide an observed target-genome locus.
 All 23 assemblies, haplotypes, and subgenomes remain independent. No
 species-level mean or consensus is used.
 
+Counts are first assembled as complete unit-by-chromosome and
+unit-by-chromosome-by-zone grids. The negative-binomial models retain these
+unit-specific observations and include genome unit as an adjustment term.
+Model-adjusted chromosome rates are standardized with equal weight over all 23
+genome units. Model-adjusted zone contrasts are standardized with equal weight
+over all 23 genome units and all 29 homologous chromosome groups. Genome units
+are pooled only for descriptive chromosome-by-zone summaries. In those
+summaries, decayed counts and annotated-gene denominators are summed separately
+after chromosomes have been assigned to the corresponding HY4A group.
+
 ## Numerators and denominators
 
 - Primary numerator: article-method `decayed` calls with a target-assembly
@@ -109,4 +119,3 @@ analysis does not claim centromere association, transposable-element causation,
 or a specific inversion/translocation breakpoint without independent
 annotations. It tests reproducible chromosome and within-chromosome
 heterogeneity in the article-method decayed signal.
-
