@@ -34,18 +34,22 @@ LOSS_LABELS = {
     "truncation_or_partial_alignment_candidate": "Truncation/partial candidate",
     "residual_sequence_mechanism_unresolved": "Residual sequence; mechanism unresolved",
 }
-RELATIONS = (
+SOURCE_RELATIONS = (
     "expected_interval_local",
     "same_chromosome_displacement_candidate",
     "interchromosomal_displacement_candidate",
     "genomewide_residual_sequence_unanchored",
     "unlocalized",
 )
+PLOT_RELATIONS = tuple(
+    relation
+    for relation in SOURCE_RELATIONS
+    if relation != "genomewide_residual_sequence_unanchored"
+)
 RELATION_LABELS = {
     "expected_interval_local": "Expected interval",
     "same_chromosome_displacement_candidate": "Same-chromosome candidate",
     "interchromosomal_displacement_candidate": "Different-chromosome candidate",
-    "genomewide_residual_sequence_unanchored": "Unanchored residual",
     "unlocalized": "Unlocalized",
 }
 
@@ -92,7 +96,7 @@ def main() -> int:
         len(chromosome_order)
         != int(manifest["hy4a_standardized_chromosomes"])
         or len(chromosome_rows) != len(LOSS_TYPES) * len(chromosome_order)
-        or len(relation_rows) != len(LOSS_TYPES) * len(RELATIONS)
+        or len(relation_rows) != len(LOSS_TYPES) * len(SOURCE_RELATIONS)
     ):
         raise SystemExit("ERROR: chromosome or location grid does not close")
 
@@ -118,9 +122,16 @@ def main() -> int:
         )
         for row in relation_rows
     }
+    if any(
+        relation_lookup[(loss_type, "genomewide_residual_sequence_unanchored")] != 0
+        for loss_type in LOSS_TYPES
+    ):
+        raise SystemExit(
+            "ERROR: unanchored residual rows are nonzero and cannot be omitted"
+        )
     relation_counts = np.asarray(
         [
-            [relation_lookup[(loss_type, relation)] for relation in RELATIONS]
+            [relation_lookup[(loss_type, relation)] for relation in PLOT_RELATIONS]
             for loss_type in LOSS_TYPES
         ],
         dtype=float,
@@ -208,11 +219,11 @@ def main() -> int:
     )
 
     axis_b = figure.add_subplot(grid[1, 0])
-    colors = ("#4477AA", "#66CCEE", "#AA3377", "#EECC66", "#B8B8B8")
-    hatches = ("", "", "//", "..", "")
+    colors = ("#4477AA", "#66CCEE", "#AA3377", "#B8B8B8")
+    hatches = ("", "", "//", "")
     y = np.arange(len(LOSS_TYPES))
     left = np.zeros(len(LOSS_TYPES))
-    for index, relation in enumerate(RELATIONS):
+    for index, relation in enumerate(PLOT_RELATIONS):
         values = relation_percent[:, index]
         axis_b.barh(
             y,
@@ -300,8 +311,10 @@ def main() -> int:
             }
         )
     for row in relation_rows:
+        if row["location_relation"] not in PLOT_RELATIONS:
+            continue
         loss_index = LOSS_TYPES.index(row["loss_type_group"])
-        relation_index = RELATIONS.index(row["location_relation"])
+        relation_index = PLOT_RELATIONS.index(row["location_relation"])
         plot_rows.append(
             {
                 "panel": "placement_composition",
@@ -331,7 +344,7 @@ def main() -> int:
         "chromosome-length expectations, with a 0.5 pseudocount. Panel (b) separates local "
         "residual loci, candidate "
         "same-chromosome displacement, candidate different-chromosome displacement, "
-        "unanchored genome-wide residual sequence, and unlocalized calls. Candidate "
+        "and unlocalized calls. Candidate "
         "displacements are best existing protein-to-genome alignments and are not proof of "
         "inversion, translocation, or orthology. Panel (c) compares observed local positions "
         "for the three explicit coding-disruption types. The normalized end-distance scale "
@@ -347,6 +360,7 @@ def main() -> int:
             "ordinary_decayed_residuals_included_when_localizable": True,
             "strict_types_separated": True,
             "candidate_displacements_not_claimed_as_rearrangements": True,
+            "zero_count_unanchored_residual_category_omitted": True,
             "chromosomes_standardized_to_hy4a": True,
             "no_species_aggregation": True,
             "publication_labels_are_neutral": True,

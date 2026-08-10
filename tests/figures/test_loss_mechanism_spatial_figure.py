@@ -76,7 +76,11 @@ class LossMechanismSpatialFigureTest(unittest.TestCase):
                     {
                         "loss_type_group": loss_type,
                         "location_relation": relation,
-                        "unit_gene_rows": "2",
+                        "unit_gene_rows": (
+                            "0"
+                            if relation == "genomewide_residual_sequence_unanchored"
+                            else "2"
+                        ),
                     }
                     for loss_type in LOSS_TYPES
                     for relation in RELATIONS
@@ -141,6 +145,13 @@ class LossMechanismSpatialFigureTest(unittest.TestCase):
             self.assertEqual(
                 validation["status"],
                 "PASS_LOSS_MECHANISM_SPATIAL_FIGURE",
+            )
+            plot_data = (
+                output / "loss_mechanism_spatial.plot_data.tsv"
+            ).read_text(encoding="utf-8")
+            self.assertNotIn(
+                "genomewide_residual_sequence_unanchored",
+                plot_data,
             )
             self.assertTrue((output / "loss_mechanism_spatial.png").is_file())
 
