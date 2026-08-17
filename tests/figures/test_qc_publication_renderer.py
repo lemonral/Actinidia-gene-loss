@@ -132,7 +132,9 @@ class QCPublicationRendererTest(unittest.TestCase):
         )
         self.assertEqual(rows[2]["assembly_scope"], "chromosome_only_subset")
         self.assertIn(r"$\mathit{A.\ deliciosa}$", rows[0]["display_label"])
-        self.assertIn(r"$\mathrm{current}$", rows[0]["display_label"])
+        self.assertIn(r"$\mathrm{A}$", rows[0]["display_label"])
+        self.assertNotIn("current", rows[0]["display_label"])
+        self.assertEqual(rows[2]["display_label"], r"$\mathit{A.\ rufa}$")
         self.assertEqual(validation["excluded_assembly_unit_count"], 1)
         self.assertEqual(
             validation["checks"]["all_metadata_rows_plotted_including_excluded"],

@@ -1,12 +1,11 @@
-# Revised analysis evidence index
+# Results provenance
 
-This index links each principal revised claim to a small, path-free result in
-the repository. Raw alignments, genomes, tool work directories, and private
-runtime paths remain outside Git. A row is publication-ready only when its
-stated gate is satisfied; limitations are retained rather than silently
+This index links each analysis claim to its separately archived, path-free
+result bundle. Raw alignments, genomes, tool work directories, and private
+runtime paths remain outside Git. Limitations are retained rather than silently
 resolved by changing thresholds.
 
-| Revised claim | Canonical repository evidence | Gate and interpretation |
+| Analysis claim | Archived result bundle | Validation and interpretation |
 |---|---|---|
 | Assembly and annotation quality are reported for every chromosome analysis unit | `results/tables/assembly_annotation_qc` and `results/figures/assembly_annotation_qc` | PASS for 23 units; BUSCO is restricted to exact-bound *Actinidia* inputs, with no outgroup BUSCO |
 | New chromosome names follow Hongyang v4 HY4A | `results/figures/chromosome_similarity_naming` | PASS for 9 units and 261 chromosome labels; each unit has one unique `Chr01`--`Chr29` bijection; absolute support and HY4P/JCVI are QC only; publisher direction is preserved |
@@ -26,12 +25,11 @@ resolved by changing thresholds.
 | NLR repertoire and non-shared NLR loss are mechanism-stratified | `results/tables/nlr_loss_types` and `results/figures/nlr_loss_types` | PASS using the completed atomic 24-input batch without rerunning NLR-Annotator; 138 all-unit-positive reference NLRs are excluded, leaving 76 genes, 1,738 resolved unit comparisons, and 254 positive calls split into frameshift, stop, combined, no-hit, truncation candidate, and unresolved-residual groups; no species aggregation is used |
 | Lost and complete NLR repertoires are classified by NLR structure | `results/tables/nlr_loss_structural_classes` and `results/figures/nlr_loss_structural_classes` | PASS for the same 254 non-shared `decayed + deleted` unit-gene calls, a separate 138-unique-gene shared-loss column, all 6,034 NLR-Annotator calls across the 23 assembly units, and class-specific total/non-shared loss percentages over matching resolved reference-NLR opportunities; target repertoire counts are not used as cross-universe loss denominators and no species aggregation is used |
 | Terminal loss functions are tested after accounting for expression and family size | `results/tables/species_complete_loss_covariate_adjusted_enrichment` and `results/figures/species_complete_loss_covariate_adjusted_enrichment` | Primary functional result: 13 biological lineages, 33,998 resolved reference genes, 33,974 genes with complete covariates, 19,192 terminal-event memberships, 32,591 tested lineage-term rows, and 3,646 BH-significant positive associations. Complete loss in a multi-unit species requires every assigned unit to be decayed or deleted. One-sided logistic score tests adjust for linear and quadratic four-tissue mean TPM and reference-family-size effects. GO, KEGG orthology, and KEGG pathway results remain separate |
-| Unit-level functional profiles preserve genome-unit resolution | `results/tables/unit_functional_enrichment_article_method`, `results/figures/unit_functional_enrichment_detail`, and `results/figures/unit_functional_enrichment_article_method` | Complementary descriptive result: 23 independent `decayed + deleted` foregrounds, 179,827 unit-gene memberships, and 6,420 BH-significant hypergeometric GO/KEGG rows. Each background is the matching unit's resolved genes; haplotypes and subgenomes are not aggregated |
+| Unit-level functional profiles preserve genome-unit resolution | `results/tables/unit_functional_enrichment_article_method`, `results/figures/unit_functional_enrichment_detail`, and `results/figures/unit_functional_enrichment_article_method` | Complementary descriptive result: 23 separately analysed `decayed + deleted` foregrounds, 179,827 unit-gene memberships, and 6,420 BH-significant hypergeometric GO/KEGG rows. Each background is the matching unit's resolved genes; haplotypes and subgenomes are not aggregated |
 | Unit-resolved loss-event functions retain topology context | `results/tables/scaffold_functional_enrichment` and `results/figures/scaffold_functional_enrichment` | PASS for all 39 internal nodes, unit groups, and unit terminals of the topology-only scaffold: 56,602 event–gene memberships, a common 33,998-gene resolved background, and 905 BH-significant GO/KEGG rows. True zero-significance nodes remain visible; the scaffold is not claimed as a newly inferred 23-species phylogeny |
 | Loss-associated functions were tested with explicit phylogenetic context | `results/tables/tree_functional_enrichment` and `results/figures/tree_aware_functional_summary` | PASS for 31 article-method foregrounds and 1,826 BH-significant rows; complete losses are classified as exact terminal-branch, internal-branch, or repeated independent events on the matching frozen topology, while partial/homeolog-specific and unknown lineage states are never promoted to ancestral events. The prior strict functional bundle remains a sensitivity |
 | Pure species-specific loss functions exclude overlapping evolutionary patterns | `results/tables/species_specific_functional_enrichment` and `results/figures/species_specific_functional_enrichment` | Narrow sensitivity only: 1,167 genes assigned to exactly one terminal lineage and resolved retained elsewhere; 54 GO/KEGG species-term rows pass BH `q <= 0.05`. This does not replace the covariate-adjusted species-complete terminal analysis |
 | Publication labels are concise but traceable | plot-data tables and manifests in all current figure bundles | PASS; internal IDs remain unchanged, while display labels use *A. zhejiangensis* A/B, *A. rufa*, and *A. macrosperma*; informative haplotype and subgenome suffixes remain upright |
 
-The final release inspection must reconcile this index with the corresponding
-validation and checksum files, rerun the full test suite and privacy scan, and
-stage only curated small outputs.
+Before publishing a result archive, reconcile this index with the corresponding
+validation and checksum files and rerun the relevant tests and path scan.

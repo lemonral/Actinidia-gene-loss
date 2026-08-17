@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -49,9 +50,10 @@ def test_functional_categories_are_explicit_and_nonoverlapping():
 
 
 def test_category_summary_closes_expected_pooled_counts():
-    rows, validation, _ = CATEGORY_MODULE.prepare(
-        ROOT / "results/tables/functional_enrichment_uniform"
-    )
+    result_dir = ROOT / "results/tables/functional_enrichment_uniform"
+    if not result_dir.is_dir():
+        raise unittest.SkipTest("curated result archive is not distributed with the code")
+    rows, validation, _ = CATEGORY_MODULE.prepare(result_dir)
     assert len(rows) == 140
     assert validation["status"] == "pass"
     pooled = {

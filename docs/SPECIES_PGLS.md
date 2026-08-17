@@ -1,7 +1,9 @@
-# Species-level PGLS
+# Archived species-level PGLS sensitivity
 
-**Current status: completed as an exploratory analysis and blocked for primary
-publication by `BLOCKED_DENOMINATOR_AWARE_MODEL_REQUIRED`.** The accepted
+This sensitivity was completed as an exploratory analysis and was not used for
+primary inference. The completed run retains the machine-readable status
+`BLOCKED_DENOMINATOR_AWARE_MODEL_REQUIRED` to prevent an ordinary Gaussian PGLS
+from being presented as a denominator-aware loss model. The accepted
 17-tip protein/codon topology was dated with MCMCTree under four
 checksum-bound TimeTree 5 secondary constraints because the compact cohort
 has no active fossil bracket. The validated output is ultrametric and must not

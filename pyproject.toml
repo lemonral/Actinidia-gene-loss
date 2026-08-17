@@ -7,7 +7,7 @@ name = "actinidia-gene-loss"
 version = "0.2.0"
 description = "Manifest-driven comparative gene-loss and phylogeny workflows for Actinidia"
 requires-python = ">=3.10"
-authors = [{name = "Actinidia gene-loss manuscript project"}]
+authors = [{name = "Actinidia gene-loss contributors"}]
 dependencies = [
   "biopython>=1.80",
   "numpy>=1.23",

@@ -11,6 +11,6 @@ calls a bracketed candidate, parses a 12-column negative-strand tBLASTX hit,
 creates the classification and runs the five-bin spatial summary. It also
 checks the explicit legacy six-column parser path.
 
-It does not test SynOrths, BLAST+, large genome memory use, SciPy statistics or
-matplotlib rendering; those are environment/integration tests that should be
-run against a frozen server input subset before replacing any manuscript output.
+It does not test SynOrths, BLAST+, large-genome memory use, SciPy statistics, or
+Matplotlib rendering. Run those integration tests on a small representative
+dataset before regenerating study outputs.

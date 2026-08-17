@@ -1,9 +1,10 @@
-# Actinidia gene-loss analysis
+# Synteny-informed gene-loss analysis across Actinidia
 
 Reproducible workflows for comparative gene-loss analysis, genome collinearity,
-phylogeny, and gene-family evolution in *Actinidia*. The analyses use
-*Clematoclethra scandens* as the reference gene set and retain chromosome-level
-assemblies, haplotypes, and subgenomes as explicit genome units.
+phylogeny, and gene-family evolution across *Actinidia*. The study uses the
+sister-lineage species *Clematoclethra scandens* as a syntenic reference and
+analyses 23 chromosome-level assemblies, haplotypes, or subgenomes representing
+12 *Actinidia* species.
 
 This repository contains the Python code, machine-readable configuration,
 workflow documentation, and synthetic tests used in the study. Genome
@@ -29,7 +30,7 @@ The workflow includes:
 - NLR repertoire, loss, structural-class, and branch-event analyses;
 - OrthoFinder, IQ-TREE, ASTRAL-Pro, MCMCTree, and CAFE5 workflows for species
   phylogeny and gene-family evolution; and
-- reproducible generation of publication figures and tables.
+- reproducible generation of analysis figures and tables.
 
 ## Gene-loss definitions
 
@@ -83,7 +84,7 @@ scripts/figures/     publication figure renderers
 Python 3.10 or later is required.
 
 ```bash
-git clone git@github.com:lemonral/Actinidia-gene-loss.git
+git clone https://github.com/lemonral/Actinidia-gene-loss.git
 cd Actinidia-gene-loss
 
 python3 -m venv .venv
@@ -96,7 +97,7 @@ Confirm the installation with:
 
 ```bash
 geneloss --help
-pytest -q
+python -m pytest -q
 ```
 
 The complete workflow also uses stage-specific external programs, including
@@ -155,7 +156,7 @@ Start with:
 1. [`docs/REPOSITORY_GUIDE.md`](docs/REPOSITORY_GUIDE.md) for project
    orientation;
 2. [`docs/PIPELINE.md`](docs/PIPELINE.md) for the end-to-end workflow;
-3. [`docs/MANUSCRIPT_METHOD_LOSS_CLASSIFICATION.md`](docs/MANUSCRIPT_METHOD_LOSS_CLASSIFICATION.md)
+3. [`docs/LOSS_CLASSIFICATION.md`](docs/LOSS_CLASSIFICATION.md)
    for the primary loss-classification rules;
 4. [`docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md`](docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md)
    for spatial analysis;
@@ -165,7 +166,7 @@ Start with:
    branch-event and complementary functional analyses.
 
 A concise record of analysis and figure changes is maintained in
-[`docs/ANALYSIS_CHANGELOG.md`](docs/ANALYSIS_CHANGELOG.md).
+[`CHANGELOG.md`](CHANGELOG.md).
 
 Every stage-specific script supports `--help`, for example:
 
@@ -189,14 +190,14 @@ data and do not contain study genomes or manuscript files.
 Run the test suite with:
 
 ```bash
-pytest -q
+python -m pytest -q
 ```
 
 ## Results and data availability
 
-Large analysis outputs are stored separately because of file size and
-third-party redistribution restrictions. The expected structure and contents
-of curated result bundles are documented in
+Large analysis outputs are archived separately because of file size and
+third-party redistribution restrictions. The expected structure of a curated
+result bundle is documented in
 [`results/README.md`](results/README.md). A typical figure bundle contains the
 PNG and PDF figure, plotted data, caption, validation summary, and checksum
 manifest.

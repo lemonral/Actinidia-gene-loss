@@ -1,8 +1,7 @@
 # Repository guide
 
-This guide explains where each type of file belongs and how information moves
-through the project. It is intended for a new collaborator who has not seen the
-manuscript-era directories.
+This guide describes the repository organization and the data flow required to
+reproduce the analyses.
 
 ## Two sibling roots
 
@@ -12,8 +11,8 @@ downloaded genomes, annotations, raw tool output, temporary files, logs, and
 other large or private material.
 
 ```text
-actinidia_gene_loss_rebuild/   version-controlled project
-actinidia_gene_loss_data/      external large-data and run store
+Actinidia-gene-loss/       version-controlled project
+external-data/             user-defined large-data and run store
 ```
 
 Deleting a derived run below the data store must never delete a source download
@@ -157,25 +156,21 @@ SynOrths, BLAST, and NLR output stays in the external data store.
    gene/mRNA/CDS GFF3, and retain parent-bundle checksums. See
    `PRIMARY_ANNOTATION_STANDARDIZATION.md`.
 9. **Call gene loss.** Build candidate losses from syntenic anchors, execute the
-   recorded tBLASTX search, and classify each reference gene as deleted,
-   uncertain, or retained according to complete callable evidence. A local
-   translated hit is uncertain genomic sequence, not a pseudogene without
-   disruptive-mutation evidence. Manuscript-era `decayed=pseudogenized` output
-   remains a separately labelled reproduction. Uncertain calls never enter
-   positive-loss numerators.
-10. **Aggregate biological species.** Convert the complete assembly-unit matrix
-    into a four-state species matrix. Define shared losses across biological
-    species, not across technical units; retain partial haplotype/subgenome
-    evidence separately.
-11. **Run downstream analyses.** Use the declared article-method or strict
-    evidence layer for each comparison and preserve its numerator and
-    denominator explicitly. The primary GO/KEGG analysis keeps all 23 assembly
-    units separate: each foreground is that unit's article-method `decayed +
-    deleted` set, and its background is the same unit's `retained + decayed +
-    deleted` set. It does not require retained evidence in other units and
-    never aggregates haplotypes or subgenomes. Tree-aware, pure
-    species-specific, and strict-evidence enrichments are supplementary
-    sensitivities rather than replacements for this primary result.
+   recorded tBLASTX search, and classify every resolved comparison as retained,
+   decayed, or deleted under the uniform thresholds in
+   `LOSS_CLASSIFICATION.md`. Keep not-called comparisons explicit. Join
+   Miniprot coding-disruption evidence afterward without rewriting the primary
+   class.
+10. **Summarize units and biological lineages.** Retain all 23 genome units for
+    unit-level comparisons. Group them into 13 biological lineages for branch
+    analyses. Complete loss in a multi-unit lineage requires a positive call in
+    every constituent unit; mixed states remain partial or homeolog-specific.
+11. **Run downstream analyses.** Preserve the declared numerator and denominator
+    for every comparison. The primary functional analysis uses terminal
+    complete-loss events across 13 biological lineages and adjusts for
+    four-tissue mean expression and reference-family size. Unit-level
+    hypergeometric, scaffold-aware, and strict-evidence results are descriptive
+    or sensitivity analyses rather than independent species-level replicates.
 12. **Render figures.** Use real taxon metadata. Latin binomials are italic;
     haplotype, subgenome, accession, and scope suffixes are upright. Use the
     concise aliases *A. zhejiangensis* A/B, *A. rufa*, and
@@ -188,20 +183,18 @@ SynOrths, BLAST, and NLR output stays in the external data store.
     but never enter the gene-loss denominator. With no active fossil bracket,
     the completed revised tree uses the four author-approved, checksum-bound
     TimeTree 5 secondary intervals and is not called fossil-calibrated. Keep
-    all assembly units in a separate undated diagnostic tree. After both the
-    dated species tree and callable-aware shared/non-shared aggregation pass,
-    run PGLS with
-    one biological-species row, `log2_ploidy`, and all required sensitivities.
+    all assembly units in a separate undated diagnostic tree. The archived
+    ordinary PGLS is exploratory and is not used for primary inference because
+    it does not model unequal resolved denominators.
     Use one declared *Leea coccinea* haplotype for its one species row. The
     transcriptome-only *Saurauia tristyla* Angiosperms353 asset is tree-only and
     is excluded from the OrthoFinder proteome/count matrix, CAFE, and gene-loss
     analyses. The validated CAFE output is Base Poisson; Gamma3 is explicitly
     unavailable after initialization failure and is not retried by deleting
     further families.
-14. **Release gate.** Re-run tests single-threaded, verify figures and workbook
-    formulas visually, scan for private paths/credentials/manuscript files and
-    bulk data, inspect staged Git files, and create exactly one final private
-    local commit. Do not push it in this workflow.
+14. **Release checks.** Re-run tests single-threaded, verify generated figures
+    and workbook formulas, scan tracked files for private paths or credentials,
+    and inspect the complete staged diff before publishing a release.
 
 ## Meaning of common states
 
