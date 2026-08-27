@@ -454,7 +454,7 @@ and the same species aggregation ledger.
 Map expression identifiers to the exact annotation version and retain the
 arithmetic mean TPM across the four declared *C. scandens* tissues. Divide the
 reference genes into 14 rank-first expression bins and calculate a separate
-rate for every genome unit and bin. Shared and non-shared calls are included
+rate for every genome and bin. Shared and non-shared calls are included
 together. The numerator is article-method `decayed`, and the resolved
 denominator is `retained + decayed + deleted`; `not_called_loss` is excluded.
 Fit the reported overall regression to the complete unit-by-bin plot table and
@@ -463,12 +463,24 @@ retain the plotted data and fit statistics.
 ### Copy number
 
 In the production analysis, copy number is the size of the *C. scandens*
-reference-protein CD-HIT 0.90 similarity cluster. It is therefore a reference
-gene-family-size measure, not a target-species CNV call. Keep classes 1--7,
-each supported by more than 100 reference genes. For every genome unit and
-class, use the same shared-plus-non-shared article-method `decayed` numerator
-and resolved denominator used for expression, and retain the fitted overall
-relationship.
+protein CD-HIT 0.90 similarity cluster. It is therefore *C. scandens* gene copy
+number, not a target-species CNV call. Keep classes 1--7, each supported by more
+than 100 *C. scandens* genes. For every genome and class, use the same
+shared-plus-non-shared article-method `decayed` numerator and resolved
+denominator used for expression, and retain the fitted overall relationship.
+
+### Ploidy-group comparison
+
+Treat each of the 23 haplotype, subgenome, or single-genome assemblies as one
+observation, giving 11 polyploid and 12 diploid genomes. For each genome, use
+`decayed + deleted` over `retained + decayed + deleted`. Report both the exact
+two-sided Mann-Whitney test, which compares ranks, and the exact two-sided
+permutation test for the difference in arithmetic means. Enumerate every group
+assignment; do not use Monte Carlo permutations. The primary results are
+`U = 22`, exact Mann-Whitney `P = 0.0056224567`, and exact mean-difference
+permutation `P = 0.0041380749`. Run
+`scripts/statistics/compare_ploidy_loss_rates.py` from the frozen 23-genome
+summary used for Table S12.
 
 ### Chromosome position
 
@@ -477,13 +489,13 @@ an observed residual-sequence coordinate in the corresponding target genome.
 Include shared and non-shared loci together. Exclude deleted calls because
 they have no observed target locus, and exclude spatially unlocalized decayed
 calls. Harmonize the 29 homologous *Actinidia* chromosome groups to HY4A
-`Chr01`--`Chr29` while retaining each genome unit as an independent model row.
+`Chr01`--`Chr29` while retaining each genome as an independent model row.
 
 Test between-chromosome heterogeneity with a negative-binomial model containing
-genome-unit and chromosome effects and the log annotated-gene count as an
+genome and chromosome effects and the log annotated-gene count as an
 offset. Test within-chromosome position after assigning each target gene and
 decayed locus to one of five equal zones from the nearest chromosome end to
-the centre. The zone model contains genome-unit, chromosome, and zone effects,
+the centre. The zone model contains genome, chromosome, and zone effects,
 again with the matching annotated-gene count as an offset. Treat frameshift,
 in-frame-stop, and combined-disruption subsets as mechanistic sensitivities.
 Use chromosome-length expectations only for the separate descriptive
@@ -515,22 +527,25 @@ Viridiplantae taxonomic scope. Analyze GO biological process, molecular
 function, and cellular component, KEGG orthology, and KEGG pathway membership
 as separate annotation systems.
 
-The primary foregrounds are terminal complete-loss events on the accepted
-13-lineage topology. Unit-level positive states are article-method `decayed`
-or `deleted`. For a multi-unit species, complete loss requires every assigned
-haplotype or subgenome to be positive; mixed states remain partial or
-homeolog-specific. Remove genes assigned to an ancestral event on the focal
-root-to-tip path from that lineage's risk set.
+The primary foregrounds are complete species-specific loss events on the
+accepted 13-lineage topology. Genome-level positive states are article-method
+`decayed` or `deleted`. For a multi-genome species, complete loss requires every
+assigned haplotype or subgenome to be positive; mixed states remain partial or
+homeolog-specific. Remove genes assigned to tree-node losses on the focal
+root-to-tip path from that lineage's risk set. Within each annotation system,
+the remaining annotation- and covariate-complete risk-set genes form the
+comparison background.
 
 For each lineage and annotation system, fit a null logistic model containing
 z-standardized log2(four-tissue mean TPM + 0.1), its squared term,
-z-standardized log2(reference CD-HIT 0.90 family size), and its squared term.
-Test each functional term with a one-sided efficient score test, requiring at
-least five background genes and two terminally lost genes. Apply
+z-standardized log2(*C. scandens* gene copy number, defined as CD-HIT 0.90
+cluster size), and its squared term. Test each functional term with a one-sided
+efficient score test, requiring at least five background genes and two
+species-specific lost genes. Apply
 Benjamini-Hochberg correction within lineage and annotation system, then refit
 significant positive terms to estimate adjusted odds ratios and 95% confidence
 intervals. The validated analysis contains 33,998 resolved reference genes,
-33,974 genes with complete covariates, 19,192 terminal-event memberships,
+33,974 genes with complete covariates, 19,192 species-specific event memberships,
 32,591 tested lineage-term rows, and 3,646 significant rows.
 
 Representative figure terms are selected deterministically from significant,

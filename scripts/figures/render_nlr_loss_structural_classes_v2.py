@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if (ROOT / "src").is_dir():
     sys.path.insert(0, str(ROOT / "src"))
 
-from geneloss_repro.figure_bundle import write_figure_bundle
+from geneloss_repro.figure_bundle import _register_arial_fonts, write_figure_bundle
 from geneloss_repro.labels import format_downstream_taxon_label
 
 
@@ -114,6 +114,7 @@ def main() -> int:
     import matplotlib
 
     matplotlib.use("Agg")
+    _register_arial_fonts()
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.gridspec import GridSpecFromSubplotSpec
@@ -550,7 +551,7 @@ def main() -> int:
 
     draw_branch_composition(terminal_axis, terminal_branches)
     terminal_axis.set_ylabel("NLR loss-event composition (%)")
-    terminal_axis.set_xlabel("Terminal branches")
+    terminal_axis.set_xlabel("Species-specific events")
     terminal_axis.text(
         -0.055,
         1.035,
@@ -562,7 +563,7 @@ def main() -> int:
     )
 
     draw_branch_composition(internal_axis, internal_branches)
-    internal_axis.set_xlabel("Internal branches with NLR loss events")
+    internal_axis.set_xlabel("Tree-node events with NLR losses")
     internal_axis.set_yticklabels([])
     internal_axis.tick_params(axis="y", length=0)
 
@@ -630,10 +631,10 @@ def main() -> int:
         "of the same structural class. This composition metric compares two "
         "NLR gene universes and is not an orthology-resolved evolutionary "
         "loss rate. (c) Structural composition of exact tree-mapped NLR loss "
-        "events. For multi-assembly species, a terminal event requires all "
+        "events. For multi-assembly species, a species-specific event requires all "
         "assigned haplotypes or subgenomes to be decayed or deleted. Bar "
         "heights are normalized to 100%, with event totals printed above; "
-        "internal branches without an NLR event are omitted. Structural "
+        "tree-node branches without an NLR event are omitted. Structural "
         "classes are inherited from the matching Clematoclethra scandens "
         "reference NLR. Not-called comparisons are excluded."
     )

@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if (ROOT / "src").is_dir():
     sys.path.insert(0, str(ROOT / "src"))
 
-from geneloss_repro.figure_bundle import write_figure_bundle
+from geneloss_repro.figure_bundle import _register_arial_fonts, write_figure_bundle
 from geneloss_repro.labels import format_downstream_taxon_label
 
 
@@ -76,6 +76,7 @@ def main() -> int:
     import matplotlib
 
     matplotlib.use("Agg")
+    _register_arial_fonts()
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.lines import Line2D
@@ -181,13 +182,16 @@ def main() -> int:
 
     plt.rcParams.update(
         {
-            "font.family": "DejaVu Sans",
+            "font.family": "Arial",
             "font.size": 7.2,
             "axes.labelsize": 8.0,
             "xtick.labelsize": 6.8,
             "ytick.labelsize": 6.8,
             "legend.fontsize": 6.5,
-            "mathtext.fontset": "dejavusans",
+            "mathtext.fontset": "custom",
+            "mathtext.rm": "Arial",
+            "mathtext.it": "Arial:italic",
+            "mathtext.bf": "Arial:bold",
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
         }
@@ -376,8 +380,8 @@ def main() -> int:
     )
     axis_d.legend(
         handles=[
-            Line2D([0], [0], color="#1F5A7A", marker="", label="Terminal event"),
-            Line2D([0], [0], color="#8B2C4A", marker="", label="Internal event"),
+            Line2D([0], [0], color="#1F5A7A", marker="", label="Species-specific"),
+            Line2D([0], [0], color="#8B2C4A", marker="", label="Tree-node"),
         ],
         frameon=False,
         loc="lower center",

@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if (ROOT / "src").is_dir():
     sys.path.insert(0, str(ROOT / "src"))
 
-from geneloss_repro.figure_bundle import write_figure_bundle
+from geneloss_repro.figure_bundle import _register_arial_fonts, write_figure_bundle
 from geneloss_repro.labels import format_downstream_taxon_label
 
 
@@ -162,6 +162,7 @@ def unit_order_and_labels(
 def style_matplotlib() -> None:
     import matplotlib as mpl
 
+    _register_arial_fonts()
     mpl.rcParams.update(
         {
             "font.family": "Arial",
@@ -205,6 +206,7 @@ def render_between(
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.colors import Normalize
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
     style_matplotlib()
     unit_rows = data["unit_summary"]
@@ -468,14 +470,18 @@ def render_within(
     figure = plt.figure(figsize=(7.2, 8.25), constrained_layout=True)
     grid = figure.add_gridspec(
         2,
-        2,
+        1,
         height_ratios=(1.0, 1.38),
-        width_ratios=(1.38, 1.0),
         hspace=0.08,
-        wspace=0.08,
+    )
+    bottom_grid = grid[1, 0].subgridspec(
+        1,
+        3,
+        width_ratios=(1.16, 0.24, 1.16),
+        wspace=0.02,
     )
     x = np.arange(5)
-    axis_a = figure.add_subplot(grid[0, :])
+    axis_a = figure.add_subplot(grid[0, 0])
     for group, (color, marker, linestyle) in group_styles.items():
         rows = [zone_rr_lookup[(group, zone)] for zone in ZONE_ORDER]
         values = np.asarray([f(row, "rate_ratio") for row in rows])
@@ -512,7 +518,7 @@ def render_within(
     )
     panel_letter(axis_a, "a")
 
-    axis_b = figure.add_subplot(grid[1, 0])
+    axis_b = figure.add_subplot(bottom_grid[0, 0])
     low, high = np.quantile(heat, (0.02, 0.98))
     image = axis_b.imshow(
         heat,
@@ -528,14 +534,24 @@ def render_within(
     axis_b.set_xticks(x, [ZONE_LABELS[zone] for zone in ZONE_ORDER], rotation=35, ha="right")
     axis_b.set_yticks(np.arange(29), y_labels)
     axis_b.set_xlabel("Chromosome zone (end → center)")
-    axis_b.set_ylabel("HY4A chromosome")
     axis_b.set_xticks(np.arange(-0.5, 5, 1), minor=True)
     axis_b.set_yticks(np.arange(-0.5, 29, 1), minor=True)
     axis_b.grid(which="minor", color="white", linewidth=0.3, alpha=0.55)
     axis_b.tick_params(which="minor", bottom=False, left=False)
-    colorbar = figure.colorbar(image, ax=axis_b, fraction=0.04, pad=0.018)
-    colorbar.set_label("All decayed per 1,000 target genes", fontsize=8)
-    colorbar.ax.tick_params(labelsize=7)
+    colorbar_host = figure.add_subplot(bottom_grid[0, 1])
+    colorbar_host.set_axis_off()
+    colorbar_axis = inset_axes(
+        colorbar_host,
+        width="18%",
+        height="60%",
+        loc="center left",
+        bbox_to_anchor=(0.0, 0.0, 1.0, 1.0),
+        bbox_transform=colorbar_host.transAxes,
+        borderpad=0,
+    )
+    colorbar = figure.colorbar(image, cax=colorbar_axis)
+    colorbar.set_label("All decayed per 1,000 target genes", fontsize=8, labelpad=2)
+    colorbar.ax.tick_params(labelsize=7, pad=1)
     axis_b.text(
         0.995,
         1.01,
@@ -547,7 +563,7 @@ def render_within(
     )
     panel_letter(axis_b, "b")
 
-    axis_c = figure.add_subplot(grid[1, 1])
+    axis_c = figure.add_subplot(bottom_grid[0, 2])
     for group, (color, marker) in strict_styles.items():
         rows = [pooled_lookup[(group, zone)] for zone in ZONE_ORDER]
         values = np.asarray([f(row, "decayed_loci_per_1000_genes") for row in rows])

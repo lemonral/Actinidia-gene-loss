@@ -45,13 +45,14 @@ gffread_release_archive_sha256 = "3effcbb3ccf5a76305887df0d39feb69160aed6091e42f
 maximum_workers = 1
 
 [gene_loss]
-positive_classes = ["deleted", "pseudogenized"]
-historical_reproduction_positive_classes = ["pseudogenized", "deleted"]
+positive_classes = ["decayed", "deleted"]
+strict_sensitivity_positive_classes = ["pseudogenized", "deleted"]
+historical_reproduction_positive_classes = ["decayed", "deleted"]
 uncertain_is_positive = false
 uncertain_enters_resolved_denominator = false
-shared_definition = "positive_complete in every included biological species"
-comparative_analysis_set = "non_shared"
-legacy_genome_wide_hit_rule_is_primary = false
+shared_definition = "decayed or deleted in all 23 included genomes"
+comparative_analysis_set = "shared_and_non_shared"
+legacy_genome_wide_hit_rule_is_primary = true
 
 [gene_loss.tblastx]
 maximum_workers = 14
@@ -64,8 +65,8 @@ postfilter_evalue_operator = "<"
 postfilter_evalue = 1e-5
 postfilter_alignment_length_minimum = 0
 historical_final_rule = "best genome-wide hit passing identity >=50%, bitscore >=50 and evalue <1e-5 is decayed; otherwise deleted"
-primary_rule = "superseded as production classifier by the uniform Miniprot/SynOrths evidence chain; retained for translated-search audit only"
-local_hit_rule = "uncertain genomic sequence detected; never pseudogenized without disruptive-mutation evidence"
+primary_rule = "a qualifying genome-wide hit is decayed; otherwise the missing-gene candidate is deleted"
+local_hit_rule = "qualifying residual homologous sequence supports decayed but does not by itself confirm coding disruption"
 
 [gene_loss.miniprot]
 maximum_workers = 14
@@ -80,9 +81,10 @@ strict_disruption_tags = ["fs", "st"]
 pseudogenized_interpretation = "assembly-sequence-supported disruption; not a population-fixed allele claim"
 
 [spatial]
-primary_positive_classes = ["pseudogenized"]
-resolved_denominator_classes = ["retained", "pseudogenized"]
-deleted_position_role = "expected_locus_sensitivity_only"
+primary_positive_classes = ["decayed"]
+resolved_denominator_classes = []
+primary_denominator = "annotated target genes within the matching chromosome or five-zone interval"
+deleted_position_role = "excluded because no observed residual-sequence locus is available"
 equal_width_bins = 5
 primary_bin_mode = "mutually_exclusive_equal_width"
 normalize_by = "GFF gene opportunity"

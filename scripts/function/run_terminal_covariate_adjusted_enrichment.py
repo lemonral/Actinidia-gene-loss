@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Test GO/KEGG enrichment among 23 terminal loss-event foregrounds.
+"""Test GO/KEGG enrichment among species-specific loss foregrounds.
 
-For each assembly-unit terminal, the response is whether a reference gene was
-assigned to that terminal by the frozen maximal-positive-clade event model.
-Genes already lost on an ancestor of the terminal are removed from that
-terminal's risk set.  The nuisance model adjusts for log2 four-tissue mean TPM
-and log2 reference CD-HIT family size, including quadratic terms.  A one-sided
-efficient score test is then applied to every eligible GO/KEGG term.  Terms
+For each focal lineage, the response is whether a reference gene was assigned
+as a species-specific loss. Genes assigned to tree-node losses on the focal
+root-to-tip path are removed from that lineage's risk set. The nuisance model
+adjusts for log2 four-tissue mean TPM and log2 C. scandens gene copy number,
+defined as CD-HIT 90% cluster size, including quadratic terms. A one-sided
+efficient score test is then applied to every eligible GO/KEGG term. Terms
 passing BH q <= 0.05 are refit with the complete logistic model to report an
 adjusted odds ratio and Wald confidence interval.
 """
@@ -875,7 +875,7 @@ def run(args: argparse.Namespace) -> None:
             {"reference_gene_id": gene, "missing_covariate": "four_tissue_mean_tpm"}
             for gene in missing_tpm
         ] + [
-            {"reference_gene_id": gene, "missing_covariate": "reference_family_size"}
+            {"reference_gene_id": gene, "missing_covariate": "gene_copy_number"}
             for gene in missing_family
         ]
         write_tsv(
@@ -917,15 +917,20 @@ def run(args: argparse.Namespace) -> None:
                 ),
                 "terminal_risk_set": (
                     "genes resolved in all 23 assembly units, excluding genes assigned "
-                    "to an ancestor loss event of the focal terminal"
+                    "to a tree-node loss on the focal root-to-tip path"
                 ),
                 "expression_covariate": (
                     "standardized log2(four-tissue arithmetic mean TPM + 0.1), "
                     "linear and quadratic terms"
                 ),
-                "family_size_covariate": (
-                    "standardized log2(reference CD-HIT 90% family size), "
+                "gene_copy_number_covariate": (
+                    "standardized log2(C. scandens gene copy number, defined as "
+                    "CD-HIT 90% cluster size), "
                     "linear and quadratic terms"
+                ),
+                "schema_compatibility": (
+                    "legacy family_size_* output columns store the gene-copy-number "
+                    "covariate and are retained for downstream compatibility"
                 ),
                 "function_terms": (
                     "direct frozen eggNOG-mapper GO, KEGG KO and KEGG pathway "
@@ -933,7 +938,7 @@ def run(args: argparse.Namespace) -> None:
                 ),
                 "test": (
                     "one-sided efficient logistic score test adjusted for expression "
-                    "and reference family size; BH within terminal and ontology"
+                    "and gene copy number; BH within lineage and ontology"
                 ),
                 "effect_estimate": (
                     "complete logistic refit for score-BH-significant terms; "
@@ -952,6 +957,7 @@ def run(args: argparse.Namespace) -> None:
                 "significant_gene_memberships": len(significant_gene_rows),
                 "missing_tpm_genes": len(missing_tpm),
                 "missing_family_size_genes": len(missing_family),
+                "missing_gene_copy_number_genes": len(missing_family),
             },
             "significant_by_ontology": significant_by_ontology,
             "parameters": {

@@ -20,6 +20,7 @@ import shutil
 import tempfile
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -154,6 +155,96 @@ def _atomic_write(path: Path, content: bytes) -> None:
         except FileNotFoundError:
             pass
         raise
+
+
+@lru_cache(maxsize=1)
+def _register_arial_fonts() -> tuple[str, ...]:
+    """Register Arial faces and fail rather than silently substituting a font.
+
+    Set ``ARIAL_FONT_DIR`` when Arial is installed outside a standard system
+    font directory. Arial itself is not redistributed by this repository.
+    """
+
+    from matplotlib import font_manager, rcParams
+
+    faces = (
+        ("normal", "normal"),
+        ("italic", "normal"),
+        ("normal", "bold"),
+        ("italic", "bold"),
+    )
+
+    def resolve_faces() -> tuple[str, ...] | None:
+        resolved: list[str] = []
+        for style, weight in faces:
+            properties = font_manager.FontProperties(
+                family="Arial",
+                style=style,
+                weight=weight,
+            )
+            try:
+                path = font_manager.findfont(properties, fallback_to_default=False)
+            except ValueError:
+                return None
+            if font_manager.FontProperties(fname=path).get_name() != "Arial":
+                return None
+            resolved.append(path)
+        return tuple(resolved)
+
+    resolved = resolve_faces()
+    if resolved is None:
+        configured = os.environ.get("ARIAL_FONT_DIR", "").strip()
+        directories = [
+            Path(configured) if configured else None,
+            Path("/usr/share/fonts/truetype/msttcorefonts"),
+            Path("/usr/local/share/fonts"),
+            Path("/System/Library/Fonts/Supplemental"),
+            Path("/Library/Fonts"),
+        ]
+        filenames = (
+            "Arial.ttf",
+            "Arial Bold.ttf",
+            "Arial Italic.ttf",
+            "Arial Bold Italic.ttf",
+            "arial.ttf",
+            "arialbd.ttf",
+            "ariali.ttf",
+            "arialbi.ttf",
+            "Arial_Bold.ttf",
+            "Arial_Italic.ttf",
+            "Arial_Bold_Italic.ttf",
+        )
+        for directory in directories:
+            if directory is None or not directory.is_dir():
+                continue
+            for filename in filenames:
+                candidate = directory / filename
+                if candidate.is_file():
+                    font_manager.fontManager.addfont(str(candidate))
+        resolved = resolve_faces()
+
+    if resolved is None:
+        raise RuntimeError(
+            "Arial regular, italic, bold, and bold-italic faces are required. "
+            "Install Arial or set ARIAL_FONT_DIR to the directory containing them."
+        )
+
+    rcParams.update(
+        {
+            "font.family": "Arial",
+            "mathtext.fontset": "custom",
+            "mathtext.rm": "Arial",
+            "mathtext.it": "Arial:italic",
+            "mathtext.bf": "Arial:bold",
+            "mathtext.cal": "Arial:italic",
+            "mathtext.sf": "Arial",
+            "mathtext.tt": "Arial",
+            "mathtext.fallback": None,
+            "pdf.fonttype": 42,
+            "ps.fonttype": 42,
+        }
+    )
+    return resolved
 
 
 def _atomic_save_figure(figure: Any, path: Path, image_format: str, dpi: int) -> None:

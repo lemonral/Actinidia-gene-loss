@@ -30,16 +30,24 @@ class AnalysisParameterTest(unittest.TestCase):
         self.assertEqual(jcvi["minimum_anchor_block_size"], 4)
         self.assertEqual(jcvi["coverage_anchor_source"], "raw JCVI anchors")
         self.assertEqual(data["gene_loss"]["shared_definition"],
-                         "positive_complete in every included biological species")
+                         "decayed or deleted in all 23 included genomes")
         self.assertFalse(data["gene_loss"]["uncertain_is_positive"])
         self.assertEqual(
             data["gene_loss"]["positive_classes"],
-            ["deleted", "pseudogenized"],
+            ["decayed", "deleted"],
+        )
+        self.assertEqual(
+            data["gene_loss"]["strict_sensitivity_positive_classes"],
+            ["pseudogenized", "deleted"],
+        )
+        self.assertEqual(
+            data["gene_loss"]["comparative_analysis_set"],
+            "shared_and_non_shared",
         )
         self.assertFalse(data["gene_loss"]["uncertain_enters_resolved_denominator"])
         self.assertEqual(
             data["gene_loss"]["historical_reproduction_positive_classes"],
-            ["pseudogenized", "deleted"],
+            ["decayed", "deleted"],
         )
         self.assertEqual(data["gene_loss"]["tblastx"]["maximum_workers"], 14)
         miniprot = data["gene_loss"]["miniprot"]
@@ -51,15 +59,19 @@ class AnalysisParameterTest(unittest.TestCase):
         self.assertEqual(miniprot["strict_disruption_alignment_score_minimum"], 100)
         self.assertEqual(
             data["spatial"]["primary_positive_classes"],
-            ["pseudogenized"],
+            ["decayed"],
         )
         self.assertEqual(
             data["spatial"]["resolved_denominator_classes"],
-            ["retained", "pseudogenized"],
+            [],
+        )
+        self.assertIn(
+            "annotated target genes",
+            data["spatial"]["primary_denominator"],
         )
         self.assertEqual(
             data["spatial"]["deleted_position_role"],
-            "expected_locus_sensitivity_only",
+            "excluded because no observed residual-sequence locus is available",
         )
         self.assertEqual(data["nlr"]["maximum_workers"], 8)
         self.assertTrue(data["nlr"]["shared_positive_complete_genes_excluded"])

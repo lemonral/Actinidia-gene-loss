@@ -85,16 +85,16 @@ bin; points are coloured by ploidy. This is reference-gene expression, not
 expression measured independently in every target species.
 
 The copy-number panel uses CD-HIT 0.90 clusters of the complete reference
-protein set. A gene's copy number is its original reference-cluster size,
+protein set. A gene's copy number is its original *C. scandens* cluster size,
 assigned before shared genes are removed. Classes 1--7 enter the fitted panel
 because each contains more than 100 reference genes; larger classes are shown
-only in QC. This is a reference gene-family similarity/redundancy measure, not
-a target-assembly CNV estimate. Rows without a mapped reference cluster and
+only in QC. This is a gene-copy-number measure based on protein-sequence
+similarity, not a target-assembly CNV estimate. Rows without a mapped cluster and
 all uncertain calls are excluded rather than converted to retained.
 
 ## Functional enrichment
 
-The current primary functional analysis uses species-complete terminal events
+The current primary functional analysis uses complete species-specific events
 and covariate-adjusted logistic score tests, as documented in
 `COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md`. The analysis below is retained
 only as a strict unified-evidence sensitivity.

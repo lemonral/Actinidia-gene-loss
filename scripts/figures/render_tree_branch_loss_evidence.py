@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render terminal and internal loss events with strict support."""
+"""Render species-specific and tree-node loss events with strict support."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if (ROOT / "src").is_dir():
     sys.path.insert(0, str(ROOT / "src"))
 
-from geneloss_repro.figure_bundle import write_figure_bundle
+from geneloss_repro.figure_bundle import _register_arial_fonts, write_figure_bundle
 from geneloss_repro.labels import format_taxon_label
 
 
@@ -77,6 +77,7 @@ def main() -> int:
     import matplotlib
 
     matplotlib.use("Agg")
+    _register_arial_fonts()
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -102,12 +103,18 @@ def main() -> int:
 
     plt.rcParams.update(
         {
-            "font.family": "DejaVu Sans",
+            "font.family": "Arial",
             "font.size": 10.5,
             "axes.labelsize": 11.5,
             "xtick.labelsize": 9.5,
             "ytick.labelsize": 9.5,
             "legend.fontsize": 9.5,
+            "mathtext.fontset": "custom",
+            "mathtext.rm": "Arial",
+            "mathtext.it": "Arial:italic",
+            "mathtext.bf": "Arial:bold",
+            "pdf.fonttype": 42,
+            "ps.fonttype": 42,
         }
     )
     figure, axes = plt.subplots(
@@ -219,7 +226,7 @@ def main() -> int:
 
     caption = (
         "Topology placement of gene losses and strict disruption support. Panel (a) shows "
-        "terminal branches and panel (b) internal branches. Wide bars count exact branch "
+        "species-specific branches and panel (b) tree-node branches. Wide bars count exact branch "
         "events inferred from the decayed-plus-deleted lineage states. Narrow overlays count "
         "the subset with at least one strict pseudogenized unit in every descendant lineage. "
         "The two numbers printed after each bar are total branch losses and the strict all-"
@@ -233,7 +240,7 @@ def main() -> int:
         "checks": {
             "article_method_decayed_plus_deleted": True,
             "strict_support_is_subset_overlay": True,
-            "terminal_and_internal_separated": True,
+            "species_specific_and_tree_node_separated": True,
             "partial_and_unknown_excluded": True,
             "latin_binomials_italic": True,
         },

@@ -87,6 +87,9 @@ Command-line entry points are grouped by analysis stage.
 - `spatial/`: chromosome-bin, chromosome-end, and optional independently
   supported centromere-distance analysis.
 - `downstream/`: expression and copy-number relationship tables.
+- `function/`: GO and KEGG foreground preparation, covariate-adjusted tests,
+  and supplementary enrichment summaries.
+- `statistics/`: deterministic exact ploidy-group and related comparisons.
 - `nlr/`: bounded NLR-Annotator execution, validation, repertoire/loss
   reconciliation, and summaries.
 - `figures/`: publication renderers. Each renderer writes PNG, PDF, exact plot
@@ -115,6 +118,11 @@ SynOrths, BLAST, and NLR output stays in the external data store.
 ### `docs/`
 
 - `PIPELINE.md` gives the stage-by-stage workflow.
+- `LOSS_CLASSIFICATION.md` defines the primary loss states, denominators, and
+  downstream analysis sets.
+- `COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md` defines the 13-lineage
+  species-specific foregrounds, risk-set backgrounds, and covariates.
+- `RESULTS_PROVENANCE.md` links reported results to curated evidence bundles.
 - `DECISION_RULES.md` explains inclusion, species aggregation, and spatial
   interpretation.
 - `ASSEMBLY_SELECTION.md` records candidate-specific evidence and decisions.
@@ -156,21 +164,26 @@ SynOrths, BLAST, and NLR output stays in the external data store.
    gene/mRNA/CDS GFF3, and retain parent-bundle checksums. See
    `PRIMARY_ANNOTATION_STANDARDIZATION.md`.
 9. **Call gene loss.** Build candidate losses from syntenic anchors, execute the
-   recorded tBLASTX search, and classify every resolved comparison as retained,
-   decayed, or deleted under the uniform thresholds in
-   `LOSS_CLASSIFICATION.md`. Keep not-called comparisons explicit. Join
-   Miniprot coding-disruption evidence afterward without rewriting the primary
-   class.
-10. **Summarize units and biological lineages.** Retain all 23 genome units for
-    unit-level comparisons. Group them into 13 biological lineages for branch
-    analyses. Complete loss in a multi-unit lineage requires a positive call in
-    every constituent unit; mixed states remain partial or homeolog-specific.
+   recorded tBLASTX search, and classify each comparison as `retained`,
+   `decayed`, `deleted`, or `not_called_loss` under the uniform rules in
+   `LOSS_CLASSIFICATION.md`. A qualifying residual homologous sequence supports
+   `decayed` but does not by itself establish coding disruption. Frameshift and
+   premature-stop evidence identifies a strict pseudogenized subset and never
+   rewrites the primary `decayed` or `deleted` class.
+10. **Summarize genomes and biological lineages.** Preserve all 23 genomes for
+    per-genome comparisons, then combine same-species haplotypes or subgenomes
+    for branch-based analyses while retaining *A. zhejiangensis* A and B
+    separately. Complete loss requires every constituent genome to be
+    `decayed` or `deleted`; mixed states remain partial or homeolog-specific.
 11. **Run downstream analyses.** Preserve the declared numerator and denominator
-    for every comparison. The primary functional analysis uses terminal
-    complete-loss events across 13 biological lineages and adjusts for
-    four-tissue mean expression and reference-family size. Unit-level
-    hypergeometric, scaffold-aware, and strict-evidence results are descriptive
-    or sensitivity analyses rather than independent species-level replicates.
+    for every comparison. The primary GO/KEGG analysis uses 13 biological
+    lineages. For each focal lineage, genes assigned to tree-node losses on its
+    root-to-lineage path are removed. Complete species-specific losses form the
+    foreground; the other annotation- and covariate-complete genes in the
+    lineage-specific risk set form the comparison background. Logistic score
+    tests adjust for four-tissue mean expression and *C. scandens* gene copy
+    number (CD-HIT 90% cluster size). Per-genome hypergeometric and strict-
+    evidence enrichments remain supplementary analyses.
 12. **Render figures.** Use real taxon metadata. Latin binomials are italic;
     haplotype, subgenome, accession, and scope suffixes are upright. Use the
     concise aliases *A. zhejiangensis* A/B, *A. rufa*, and
@@ -193,8 +206,9 @@ SynOrths, BLAST, and NLR output stays in the external data store.
     unavailable after initialization failure and is not retried by deleting
     further families.
 14. **Release checks.** Re-run tests single-threaded, verify generated figures
-    and workbook formulas, scan tracked files for private paths or credentials,
-    and inspect the complete staged diff before publishing a release.
+    and workbook formulas visually, scan tracked files for private paths,
+    credentials, manuscript files, and bulk data, and inspect the complete
+    staged diff before publishing a release.
 
 ## Meaning of common states
 

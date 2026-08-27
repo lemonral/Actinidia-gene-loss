@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render review figures for covariate-adjusted terminal GO/KEGG enrichment."""
+"""Render covariate-adjusted GO/KEGG figures for species-specific losses."""
 
 from __future__ import annotations
 
@@ -11,11 +11,19 @@ import json
 import math
 import os
 import shutil
+import sys
 import tempfile
 import textwrap
 from collections import defaultdict
 from pathlib import Path
 from typing import Iterable, Mapping
+
+
+ROOT = Path(__file__).resolve().parents[2]
+if (ROOT / "src").is_dir():
+    sys.path.insert(0, str(ROOT / "src"))
+
+from geneloss_repro.figure_bundle import _register_arial_fonts
 
 
 CATEGORIES = (
@@ -98,7 +106,7 @@ def display_label(species: str, suffix: str) -> str:
         return r"$\it{A.\ zhejiangensis}$ B"
     epithet = species.split()[-1]
     base = rf"$\it{{A.\ {epithet}}}$"
-    if suffix and suffix != "ActinidiaBase v1":
+    if suffix and suffix not in {"ActinidiaBase v1", "unphased"}:
         return f"{base} {suffix}"
     return base
 
@@ -231,6 +239,7 @@ def choose_terms(
 def configure_style() -> None:
     import matplotlib as mpl
 
+    _register_arial_fonts()
     mpl.rcParams.update(
         {
             "font.family": "Arial",
@@ -312,7 +321,7 @@ def render_overview(
     axis_a.barh(y, foreground, color="#547AA5", height=0.72)
     axis_a.set_yticks(y, labels)
     axis_a.invert_yaxis()
-    axis_a.set_xlabel("Terminal loss-event genes")
+    axis_a.set_xlabel("Species-specific lost genes")
     axis_a.spines[["top", "right"]].set_visible(False)
     axis_a.grid(axis="x", color="#D9D9D9", linewidth=0.5, zorder=0)
     axis_a.set_axisbelow(True)
@@ -599,21 +608,22 @@ def main() -> int:
             foreground_definition = (
                 "Biological-species foregrounds contain article-method complete "
                 "losses for which all constituent assembly units are decayed/deleted, "
-                "assigned to the focal species terminal after excluding ancestral "
-                "loss events."
+                "assigned as species-specific losses after excluding tree-node "
+                "losses."
             )
         else:
             foreground_definition = (
                 "Assembly-unit foregrounds contain article-method decayed plus "
-                "deleted genes assigned to the focal terminal after excluding "
-                "ancestral loss events."
+                "deleted genes assigned as species-specific losses after excluding "
+                "tree-node losses."
             )
         caption = (
-            "Covariate-adjusted functional enrichment among terminal loss events. "
+            "Covariate-adjusted functional enrichment of species-specific gene losses. "
             f"{foreground_definition} Logistic score tests adjust for four-tissue "
-            "mean TPM and reference CD-HIT family size; q values are BH-adjusted "
-            "within terminal and ontology. The overview reports terminal foreground "
-            "sizes and stable adjusted significant-term counts. Detail plots show "
+            "mean TPM and C. scandens gene copy number (CD-HIT 90% cluster size); "
+            "q values are BH-adjusted within lineage and ontology. The overview "
+            "reports species-specific lost-gene set sizes and stable adjusted "
+            "significant-term counts. Detail plots show "
             "nonredundant representative terms; point size encodes significance and "
             "colour encodes the complete-model adjusted odds ratio."
         )

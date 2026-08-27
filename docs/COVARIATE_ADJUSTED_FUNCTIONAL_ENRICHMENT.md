@@ -1,14 +1,17 @@
 # Covariate-adjusted functional enrichment
 
-## Analysis set and terminal events
+## Analysis set and species-specific events
 
 The analysis uses 33,998 *Clematoclethra scandens* reference genes with resolved
-states across all 23 genome units. The units are grouped into 13 biological
-lineages for branch analysis. A multi-unit lineage is completely lost only when
-every constituent haplotype or subgenome is `decayed` or `deleted`. Genes
-assigned to an ancestral event on a lineage's root-to-tip path are removed from
-that terminal risk set. The terminal foreground therefore contains complete
-losses first assigned to the focal terminal lineage.
+states across all 23 genomes. Haplotypes and subgenomes from the same species
+are combined, while the two parental haplomes of *A. zhejiangensis* are retained
+separately, giving 13 biological lineages. A multi-genome lineage is completely
+lost only when every constituent haplotype or subgenome is `decayed` or
+`deleted`. Genes assigned to tree-node losses on a lineage's root-to-tip path
+are removed from that lineage's risk set. The foreground therefore contains
+complete losses assigned specifically to the focal lineage, whereas the other
+genes in the risk set form the comparison background after annotation and
+covariate filtering.
 
 Reference functions are taken from the checksum-bound eggNOG-mapper annotation
 generated with the Viridiplantae taxonomic scope. GO roots and unresolved GO
@@ -22,15 +25,16 @@ systems.
 For each lineage and annotation system, the background contains risk-set genes
 with complete covariates and at least one annotation in that system. The null
 logistic model contains z-standardized log2(four-tissue arithmetic mean TPM +
-0.1), its squared term, z-standardized log2(reference CD-HIT 90% gene-family
-size), and its squared term. Twenty-four genes without a family-size estimate
-are excluded, leaving 33,974 covariate-complete genes before lineage- and
-annotation-specific filtering.
+0.1), its squared term, z-standardized log2(*C. scandens* gene copy number,
+defined as CD-HIT 90% cluster size), and its squared term. Twenty-four genes
+without a gene-copy-number estimate are excluded, leaving 33,974
+covariate-complete genes before lineage- and annotation-specific filtering.
 
 Each term is tested separately with a binary membership indicator. The
 one-sided efficient score statistic compares the observed loss residual among
 term members with that expected under the null model. Terms with fewer than
-five background genes or fewer than two terminally lost genes are not tested.
+five background genes or fewer than two species-specific lost genes are not
+tested.
 Benjamini-Hochberg correction is applied within each lineage and annotation
 system. The three GO namespaces form one GO testing family. KEGG orthology and
 KEGG pathway form separate testing families. A positive score-test association
@@ -38,8 +42,8 @@ with `q <= 0.05` is refitted with the full logistic model to estimate the
 adjusted odds ratio and 95% confidence interval. Non-convergent full refits are
 retained in the complete table but excluded from figures.
 
-The validated species-complete analysis contains 13 terminal lineages, 19,192
-terminal event memberships, 32,591 tested lineage-term rows, and 3,646
+The validated species-complete analysis contains 13 biological lineages,
+19,192 species-specific event memberships, 32,591 tested lineage-term rows, and 3,646
 score-test significant rows. The significant rows comprise 3,143 GO, 390 KEGG
 orthology, and 113 KEGG pathway associations.
 

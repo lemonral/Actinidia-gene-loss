@@ -11,11 +11,19 @@ from __future__ import annotations
 import argparse
 import hashlib
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+
+ROOT = Path(__file__).resolve().parents[2]
+if (ROOT / "src").is_dir():
+    sys.path.insert(0, str(ROOT / "src"))
+
+from geneloss_repro.figure_bundle import _register_arial_fonts
 
 
 PALETTE = {"diploid": "#1f77b4", "tetraploid": "#ff7f0e", "hexaploid": "#2ca02c"}
@@ -147,6 +155,7 @@ def plot_panels(expression: pd.DataFrame, copies: pd.DataFrame,
     import matplotlib
 
     matplotlib.use("Agg")
+    _register_arial_fonts()
     import matplotlib.pyplot as plt
 
     plt.rcParams.update(
@@ -203,7 +212,7 @@ def plot_panels(expression: pd.DataFrame, copies: pd.DataFrame,
                      color=PALETTE[ploidy], label=ploidy)
     x_copy = np.linspace(copies["copy_number"].min(), copies["copy_number"].max(), 200)
     ax_b.plot(x_copy, copy_stats["intercept"] + copy_stats["slope"] * x_copy, color="black", linewidth=1.1)
-    ax_b.set_xlabel("Reference gene-family size")
+    ax_b.set_xlabel("Gene copy number")
     ax_b.set_ylabel("Decayed-gene loss rate")
     ax_b.set_xticks(sorted(copies["copy_number"].astype(int).unique()))
     ax_b.set_ylim(bottom=0)
