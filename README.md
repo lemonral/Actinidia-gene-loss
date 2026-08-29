@@ -243,10 +243,3 @@ manifest.
 
 If you use this workflow, please cite the associated *Actinidia* comparative
 genomics study. Full citation details will be added after publication.
-
-## License
-
-The source code and workflow documentation in this repository are available
-under the [MIT License](LICENSE). Third-party genome assemblies, annotations,
-software, and other externally sourced materials remain subject to their
-original licenses and terms of use.
