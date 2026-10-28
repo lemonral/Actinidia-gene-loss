@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this workflow, please cite the associated paper listed below."
+type: software
+title: "Actinidia gene-loss analysis workflows"
+authors:
+  - family-names: Zhou
+    given-names: Yi
+repository-code: "https://github.com/lemonral/Actinidia-gene-loss"
+url: "https://github.com/lemonral/Actinidia-gene-loss"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Zhou
+      given-names: Yi
+    - family-names: Jia
+      given-names: Yun
+    - family-names: Luo
+      given-names: Haodong
+    - family-names: Cheng
+      given-names: Feng
+    - family-names: Zhang
+      given-names: Ying
+    - family-names: Zhou
+      given-names: Yanjun
+    - family-names: Liu
+      given-names: Yongbo
+  title: "Gene loss in polyploid Actinidia species inferred from the chromosome-level assembly of Clematoclethra scandens"
+  journal: "Horticulture Research"
+  year: 2026
+  date-published: 2026-10-23
+  start: "uhag452"
+  doi: "10.1093/hr/uhag452"
+  url: "https://doi.org/10.1093/hr/uhag452"

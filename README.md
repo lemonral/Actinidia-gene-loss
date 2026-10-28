@@ -1,103 +1,114 @@
-# Synteny-informed gene-loss analysis across Actinidia
+<div align="center">
 
-Reproducible workflows for comparative gene-loss analysis, genome collinearity,
-phylogeny, and gene-family evolution across *Actinidia*. The study uses the
-sister-lineage species *Clematoclethra scandens* as a syntenic reference and
-analyses 23 chromosome-level assemblies, haplotypes, or subgenomes representing
-12 *Actinidia* species. These 23 genomes are retained separately in per-genome
-comparisons and grouped into 13 biological lineages for branch-based analyses.
+# Gene loss in *Actinidia*
 
-This repository contains the Python code, machine-readable configuration,
-workflow documentation, and synthetic tests used in the study. Genome
-assemblies, annotations, sequencing reads, and large intermediate files are not
-redistributed here.
+**Synteny-informed gene-loss analysis across diploid and polyploid genomes**
 
-## Analysis overview
+[![Paper](https://img.shields.io/badge/Horticulture_Research-2026-254B67?style=flat-square)](https://doi.org/10.1093/hr/uhag452)
+[![DOI](https://img.shields.io/badge/DOI-10.1093%2Fhr%2Fuhag452-496D88?style=flat-square)](https://doi.org/10.1093/hr/uhag452)
+[![Python](https://img.shields.io/badge/Python-%E2%89%A53.10-3776AB?style=flat-square&logo=python&logoColor=white)](pyproject.toml)
 
-The workflow includes:
+[Overview](#overview) · [Workflow](#workflow) · [Quick start](#quick-start) · [Documentation](#documentation) · [Data](#data-and-results) · [Citation](#citation)
 
-- checksum- and manifest-based input validation;
-- primary-isoform extraction and assembly/annotation quality control;
-- chromosome correspondence assessment with nucleotide similarity and JCVI
-  collinearity;
-- SynOrths- and tBLASTX-based `retained`, `decayed`, and `deleted`
-  classification for 23 genomes;
-- independent Miniprot evidence used to identify a strict pseudogenized subset
-  without changing the primary `decayed` or `deleted` class;
-- genome- and lineage-level summaries of shared, species-specific, tree-node,
-  and recurrent loss events;
-- chromosome-level and within-chromosome analysis of decayed loci;
-- associations of gene loss with four-tissue mean expression and *C. scandens*
-  gene copy number, defined as CD-HIT 90% cluster size;
-- covariate-adjusted GO and KEGG analysis of species-specific loss events across
-  13 biological lineages;
-- NLR repertoire, loss, structural-class, and branch-event analyses;
-- OrthoFinder, IQ-TREE, ASTRAL-Pro, MCMCTree, and CAFE5 workflows for species
-  phylogeny and gene-family evolution; and
-- reproducible generation of analysis figures and tables.
+</div>
 
-## Gene-loss definitions
+> **Published in *Horticulture Research* · 23 October 2026**<br>
+> [Gene loss in polyploid *Actinidia* species inferred from the chromosome-level assembly of *Clematoclethra scandens*](https://doi.org/10.1093/hr/uhag452)<br>
+> Yi Zhou, Yun Jia, Haodong Luo, Feng Cheng, Ying Zhang, Yanjun Zhou and Yongbo Liu.
 
-The primary classification applies the same thresholds to all 23 genomes:
+## Overview
 
-| State | Evidence |
+This repository provides the analysis code, configuration files, methods and
+synthetic tests accompanying our study of gene loss in *Actinidia*. A
+chromosome-level assembly of the sister-lineage species *Clematoclethra
+scandens* provides the reference for identifying orthologs, classifying loss
+states and tracing loss events across diploid and polyploid genomes.
+
+| Reference genes evaluated | *Actinidia* genomes | Species represented | Biological lineages for event analysis |
+| :---: | :---: | :---: | :---: |
+| **35,547** | **23** | **12** | **13** |
+
+The study examines three connected questions:
+
+- **How are genes lost?** Distinguish decayed from deleted genes and assess
+  frameshift and premature-stop evidence within the decayed class.
+- **Where and when do losses occur?** Compare genomes and subgenomes, map
+  ancestral and species-specific events, and examine chromosome-level and
+  within-chromosome distributions.
+- **Which gene properties and functions are associated with loss?** Evaluate
+  expression and gene copy number, test covariate-adjusted GO and KEGG
+  enrichment, and characterize NLR repertoires and loss events.
+
+The published analysis found that decayed loss predominated, loss patterns
+varied among genomes and chromosomal regions, and species-specific losses
+showed recurrent translation- and mitochondrial-associated enrichment after
+adjustment for expression and gene copy number. See the
+[paper](https://doi.org/10.1093/hr/uhag452) for the complete results.
+
+## Workflow
+
+```mermaid
+flowchart TD
+    A["C. scandens reference<br/>23 Actinidia genomes"] --> B["Input validation<br/>Annotation QC and synteny"]
+    B --> C["SynOrths + tBLASTX<br/>Gene-loss classification"]
+    C --> D["Primary loss matrix<br/>Four evidence states"]
+    D --> E["Miniprot<br/>Coding-disruption evidence"]
+    D --> F["Per-genome<br/>comparisons"]
+    D --> G["Complete losses<br/>13 biological lineages"]
+    F --> H["Ploidy and chromosome patterns<br/>Expression and copy number"]
+    G --> I["Ancestral and<br/>species-specific events"]
+    I --> J["Adjusted GO/KEGG enrichment<br/>NLR loss events"]
+
+    classDef input fill:#eaf1f7,stroke:#6687a0,color:#18364b;
+    classDef core fill:#254b67,stroke:#254b67,color:#ffffff;
+    classDef analysis fill:#f4f6f8,stroke:#a3b2bf,color:#243746;
+    class A input;
+    class B,C,D core;
+    class E,F,G,H,I,J analysis;
+```
+
+Companion workflows cover genome collinearity, species phylogeny, divergence
+dating and gene-family evolution using JCVI, OrthoFinder, IQ-TREE,
+ASTRAL-Pro, MCMCTree and CAFE5. The stage-by-stage protocol is documented in
+[`docs/PIPELINE.md`](docs/PIPELINE.md).
+
+### Loss states and analysis sets
+
+| State | Evidence used in the primary classification |
 | --- | --- |
 | `retained` | Exact SynOrths-supported orthologous anchor |
-| `decayed` | A missing-gene candidate with at least one genome-wide tBLASTX hit at identity >= 50%, bit score >= 50, and E-value < 1e-5 |
+| `decayed` | A missing-gene candidate with a genome-wide tBLASTX hit at identity ≥ 50%, bit score ≥ 50 and E-value < `1e-5` |
 | `deleted` | A missing-gene candidate with no qualifying tBLASTX hit |
-| `not_called_loss` | Outside the resolved candidate scope |
+| `not_called_loss` | A comparison outside the resolved candidate scope |
 
-The primary positive-loss state is `decayed + deleted`; its resolved
-denominator is `retained + decayed + deleted`. Miniprot evidence is joined
-afterward to distinguish frameshift-only, in-frame-stop-only, combined, and
-mechanism-unresolved decayed calls. Decayed genes passing the coding-disruption
-and alignment-quality criteria form the strict pseudogenized subset. This
-evidence refines the possible mechanism but does not change the primary loss
-class.
+Positive losses are **`decayed + deleted`**. Loss rates use
+`retained + decayed + deleted` as the resolved denominator.
 
-The 23 genomes are preserved separately for per-genome comparisons. For
-branch-based functional and NLR analyses, haplotypes and subgenomes from the
-same species are combined, while the two parental haplomes of the F1 hybrid
-*A. zhejiangensis* are retained separately, giving 13 biological lineages. A
-multi-genome lineage is considered completely lost only when every constituent
-haplotype or subgenome is `decayed` or `deleted`; mixed states are reported as
-partial or homeolog-specific loss.
+Miniprot alignments provide additional evidence for **frameshift-only,
+in-frame-stop-only and combined** coding disruptions. Decayed genes meeting
+the alignment and disruption criteria form the **strict pseudogenized
+subset**; this evidence does not change the primary classification. Detection
+of a residual homologous sequence alone does not confirm a coding disruption.
 
-For functional analysis, the foreground is the set of complete losses assigned
-specifically to the focal lineage. Genes assigned to tree-node losses along the
-focal root-to-tip path are removed first. The remaining risk-set genes form the
-comparison background after annotation and covariate filtering. Logistic score
-tests adjust for four-tissue mean expression and *C. scandens* gene copy number
-(CD-HIT 90% cluster size).
+All **23 genomes** remain separate in per-genome comparisons. For functional
+and NLR event analyses, haplotypes and subgenomes from the same species are
+combined. The two parental haplomes of the F1 hybrid *A. zhejiangensis* remain
+separate, giving **13 biological lineages**. Complete loss requires every
+constituent genome to be decayed or deleted; mixed states represent partial or
+homeolog-specific loss.
 
-## Repository structure
+For functional enrichment, ancestral losses on the focal root-to-tip path are
+excluded first. Complete species-specific losses form the foreground; other
+eligible genes in the remaining risk set form the comparison background.
+Logistic score tests adjust for four-tissue mean expression and *C. scandens*
+gene copy number, defined as **CD-HIT 90% cluster size**. Details are given in
+the [classification guide](docs/LOSS_CLASSIFICATION.md) and
+[functional-analysis guide](docs/COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md).
 
-```text
-config/     machine-readable cohorts, parameters, manifests, and mappings
-docs/       methods, decision rules, data contracts, and workflow descriptions
-scripts/    stage-specific command-line programs
-src/        reusable Python package (geneloss_repro)
-tests/      synthetic unit and regression tests
-results/    description of the curated result-release structure
-```
+## Quick start
 
-The main script groups are:
-
-```text
-scripts/qc/          assembly, annotation, BUSCO, SynOrths, JCVI, and chromosome QC
-scripts/gene_loss/   loss matrices, per-genome comparisons, and lineage summaries
-scripts/spatial/     chromosome and within-chromosome position analyses
-scripts/downstream/  expression, copy-number, and loss-event preparation
-scripts/function/    GO and KEGG enrichment analyses
-scripts/statistics/  exact ploidy-group and related statistical comparisons
-scripts/nlr/         NLR-Annotator preparation, validation, and loss summaries
-scripts/phylogeny/   phylogeny, divergence-time, and CAFE5 preparation/validation
-scripts/figures/     publication figure renderers
-```
-
-## Installation
-
-Python 3.10 or later is required.
+**Requirements:** Python 3.10 or later. External bioinformatics tools are
+installed separately for the stages that use them.
 
 ```bash
 git clone https://github.com/lemonral/Actinidia-gene-loss.git
@@ -107,44 +118,28 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e '.[all]'
+
+geneloss --help
 ```
 
-Confirm the installation with:
+Run the synthetic test suite with:
 
 ```bash
-geneloss --help
 python -m pytest -q
 ```
 
-The complete workflow also uses stage-specific external programs, including
-BLAST+, Miniprot, minimap2, JCVI, BUSCO, SynOrths, OrthoFinder, MAFFT,
-IQ-TREE 2, ASTRAL-Pro, PAML/MCMCTree, CAFE5, and NLR-Annotator. Exact
-tool roles and validation requirements are described in
-[`docs/PHYLOGENY_TOOLCHAIN.md`](docs/PHYLOGENY_TOOLCHAIN.md) and
-[`docs/PIPELINE.md`](docs/PIPELINE.md).
+### Configure the data directory
 
-Publication figures require Arial regular, italic, bold, and bold-italic faces.
-Arial is not redistributed here. If it is installed outside a standard system
-font directory, set `ARIAL_FONT_DIR` before rendering:
-
-```bash
-export ARIAL_FONT_DIR=/path/to/licensed/arial-font-files
-```
-
-## Data configuration
-
-Large data are kept outside the Git repository. Create a local configuration
-file and point `DATA_ROOT` to an external data directory:
+Genomes and large intermediate files are stored outside the code repository.
+Copy the configuration template and set `DATA_ROOT` to your data directory:
 
 ```bash
 cp config/project.env.example config/project.env
 ```
 
-Example layout:
-
 ```text
-Actinidia-gene-loss/
-actinidia_gene_loss_data/
+Actinidia-gene-loss/          code, configuration and documentation
+actinidia_gene_loss_data/     external data directory
 ├── downloads/
 ├── raw/
 ├── standardized/
@@ -153,15 +148,13 @@ actinidia_gene_loss_data/
 └── logs/
 ```
 
-Public assets, expected checksums, genome identities, biological
-groupings, and analysis parameters are declared in `config/`. Local paths and
-credentials must not be added to these tracked files. See
-[`docs/DATA_LAYOUT.md`](docs/DATA_LAYOUT.md) for the complete storage and
-provenance policy.
+Public asset URLs, checksums, genome identities, biological groupings and
+analysis parameters are declared in [`config/`](config/). See the
+[data-layout guide](docs/DATA_LAYOUT.md) for storage and provenance conventions.
 
-## Running the workflow
+### Run individual stages
 
-The reusable command-line package provides core operations:
+The `geneloss` command provides reusable core operations:
 
 ```bash
 geneloss extract-annotation --help
@@ -172,31 +165,11 @@ geneloss build-loss-master --help
 geneloss spatial-summary --help
 ```
 
-Study-scale analyses are manifest-driven and are run in validated stages rather
-than through a single monolithic command. Each stage checks its input schema,
-sample identities, record counts, and checksums before publishing an output.
-Start with:
-
-1. [`docs/REPOSITORY_GUIDE.md`](docs/REPOSITORY_GUIDE.md) for project
-   orientation;
-2. [`docs/PIPELINE.md`](docs/PIPELINE.md) for the end-to-end workflow;
-3. [`docs/LOSS_CLASSIFICATION.md`](docs/LOSS_CLASSIFICATION.md)
-   for the primary loss-classification rules;
-4. [`docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md`](docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md)
-   for spatial analysis;
-5. [`docs/COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md`](docs/COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md)
-   for the species-specific-loss GO and KEGG models;
-6. [`docs/TREE_AWARE_LOSS_FUNCTION.md`](docs/TREE_AWARE_LOSS_FUNCTION.md) for
-   branch-event and complementary functional analyses.
-
-A concise record of analysis and figure changes is maintained in
-[`CHANGELOG.md`](CHANGELOG.md).
-
-Every stage-specific script supports `--help`, for example:
+Study-scale analyses run in stages using validated manifests. Representative
+entry points include:
 
 ```bash
 python scripts/qc/extract_primary_annotation.py --help
-python scripts/gene_loss/prepare_translated_search_candidates.py --help
 python scripts/gene_loss/compare_within_species_genome_units.py --help
 python scripts/spatial/analyze_decayed_chromosome_distribution.py --help
 python scripts/function/run_terminal_covariate_adjusted_enrichment.py --help
@@ -204,7 +177,9 @@ python scripts/statistics/compare_ploidy_loss_rates.py --help
 python scripts/nlr/run_nlr_annotator_batch.py --help
 ```
 
-The manuscript functional analysis uses the biological-lineage profile:
+> **Reproducing the published functional analysis:** use the 13-lineage
+> biological-species profile below. The default 23-genome exploratory profile
+> represents a different analysis set.
 
 ```text
 --analysis-level biological_species
@@ -213,33 +188,101 @@ The manuscript functional analysis uses the biological-lineage profile:
 --expected-terminal-event-memberships 19192
 ```
 
-These arguments are explicit safeguards: a run made with the default
-23-genome exploratory profile is not the analysis reported in the manuscript.
+External programs include BLAST+, Miniprot, minimap2, JCVI, BUSCO, SynOrths,
+OrthoFinder, MAFFT, IQ-TREE 2, ASTRAL-Pro, PAML/MCMCTree, CAFE5 and
+NLR-Annotator. Tool roles and validation requirements are described in the
+[pipeline](docs/PIPELINE.md) and
+[phylogeny toolchain](docs/PHYLOGENY_TOOLCHAIN.md).
 
-## Reproducibility
-
-The workflow is designed to fail closed when sample identifiers, schemas,
-checksums, sequence sets, or expected row counts do not match. Configuration
-files preserve biological groupings and analysis parameters, while output
-bundles record the corresponding input and tool checksums. Tests use synthetic
-data and do not contain study genomes or manuscript files.
-
-Run the test suite with:
+Publication figure renderers use Arial regular, italic, bold and bold-italic
+faces. If the fonts are installed outside standard system directories, set:
 
 ```bash
-python -m pytest -q
+export ARIAL_FONT_DIR=/path/to/licensed/arial-font-files
 ```
 
-## Results and data availability
+## Repository structure
 
-Large analysis outputs are archived separately because of file size and
-third-party redistribution restrictions. The expected structure of a curated
-result bundle is documented in
-[`results/README.md`](results/README.md). A typical figure bundle contains the
-PNG and PDF figure, plotted data, caption, validation summary, and checksum
-manifest.
+```text
+Actinidia-gene-loss/
+├── config/                   cohorts, parameters, manifests and mappings
+├── docs/                     methods, evidence rules and workflow guides
+├── scripts/
+│   ├── qc/                   assembly, annotation, synteny and chromosome QC
+│   ├── gene_loss/            loss matrices and genome/lineage summaries
+│   ├── spatial/              chromosome and within-chromosome analyses
+│   ├── downstream/           expression, copy number and event preparation
+│   ├── function/             GO and KEGG enrichment
+│   ├── statistics/           exact ploidy-group and related comparisons
+│   ├── nlr/                  NLR repertoires, evidence and loss events
+│   ├── phylogeny/            species trees, dating and CAFE5 workflows
+│   └── figures/              publication figure renderers
+├── src/geneloss_repro/        reusable Python package
+├── tests/                    synthetic unit and regression tests
+├── results/                  curated small tables and result-bundle guide
+└── CITATION.cff               software and associated-paper citation metadata
+```
+
+## Documentation
+
+| To explore… | Start here |
+| --- | --- |
+| Project organization and entry points | [Repository guide](docs/REPOSITORY_GUIDE.md) |
+| The complete analysis workflow | [Pipeline](docs/PIPELINE.md) |
+| Loss states, evidence and denominators | [Loss classification](docs/LOSS_CLASSIFICATION.md) |
+| Chromosome and within-chromosome patterns | [Decayed-locus spatial analysis](docs/DECAYED_CHROMOSOME_POSITION_ANALYSIS.md) |
+| Functional foregrounds, backgrounds and models | [Covariate-adjusted enrichment](docs/COVARIATE_ADJUSTED_FUNCTIONAL_ENRICHMENT.md) |
+| Branch events and complementary functional analyses | [Tree-aware loss analysis](docs/TREE_AWARE_LOSS_FUNCTION.md) |
+| Input storage and checksums | [Data layout](docs/DATA_LAYOUT.md) |
+| Result provenance and validation | [Results provenance](docs/RESULTS_PROVENANCE.md) |
+
+Analysis and figure changes are recorded in [`CHANGELOG.md`](CHANGELOG.md).
+
+## Data and results
+
+The repository contains code, configuration, documentation, synthetic tests
+and selected small result tables. Genome assemblies, annotations, sequencing
+reads and large intermediate outputs are stored separately. Public input
+sources and checksums are recorded in [`config/`](config/); supplementary
+tables and supporting information are available with the
+[published article](https://doi.org/10.1093/hr/uhag452).
+
+A curated figure bundle includes PNG and PDF figures, exact plot-data tables,
+captions, validation summaries and checksum manifests. The bundle format is
+described in [`results/README.md`](results/README.md).
+
+Input validation checks sample identities, schemas, sequence sets, checksums
+and expected record counts. Configuration files preserve the declared
+biological groupings and parameters, while output manifests record input and
+tool provenance. The tests use synthetic data and require no study genomes.
 
 ## Citation
 
-If you use this workflow, please cite the associated *Actinidia* comparative
-genomics study. Full citation details will be added after publication.
+If you use the code or results, please cite:
+
+Zhou, Y., Jia, Y., Luo, H., Cheng, F., Zhang, Y., Zhou, Y. and Liu, Y. (2026).
+**Gene loss in polyploid *Actinidia* species inferred from the chromosome-level
+assembly of *Clematoclethra scandens*.** *Horticulture Research*, uhag452.
+[https://doi.org/10.1093/hr/uhag452](https://doi.org/10.1093/hr/uhag452).
+
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@article{zhou2026actinidiaGeneLoss,
+  author  = {Zhou, Yi and Jia, Yun and Luo, Haodong and Cheng, Feng and
+             Zhang, Ying and Zhou, Yanjun and Liu, Yongbo},
+  title   = {Gene loss in polyploid {Actinidia} species inferred from the
+             chromosome-level assembly of {Clematoclethra scandens}},
+  journal = {Horticulture Research},
+  year    = {2026},
+  pages   = {uhag452},
+  doi     = {10.1093/hr/uhag452},
+  url     = {https://doi.org/10.1093/hr/uhag452}
+}
+```
+
+</details>
+
+Machine-readable citation metadata is provided in
+[`CITATION.cff`](CITATION.cff).
